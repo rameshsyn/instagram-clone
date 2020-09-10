@@ -2,9 +2,9 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import ScreenLayout from '../components/ScreenLayout';
 
-const Search = ({navigation}) => {
+const Search = () => {
   return (
-    <ScreenLayout navigation={navigation}>
+    <ScreenLayout>
       <View>
         <Text>This is Search screen.</Text>
       </View>

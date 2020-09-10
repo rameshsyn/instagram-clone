@@ -1,40 +1,23 @@
 import React from 'react';
 import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from './Icon';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import ProfileImage from '../assets/images/michael-dam.jpg';
+import {useNavigation} from '@react-navigation/native';
+import theme from '../config/theme';
 
-const iconSize = 30;
-const iconColor = '#333333';
-const bgColor = 'white';
-
-const BottomTab = ({navigation}) => {
+const BottomTab = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.bottomTab}>
+      <Icon name="home-outline" onPress={() => navigation.navigate('Feed')} />
       <Icon
-        name="home-outline"
-        size={iconSize}
-        color={iconColor}
-        onPress={() => navigation.navigate('Feed')}
-      />
-      <MaterialIcon
+        component={MaterialIcon}
         name="search"
-        size={iconSize}
-        color={iconColor}
         onPress={() => navigation.navigate('Search')}
       />
-      <Icon
-        name="instagram"
-        size={iconSize}
-        color={iconColor}
-        onPress={() => navigation.navigate('Feed')}
-      />
-      <Icon
-        name="heart-outline"
-        size={iconSize}
-        color={iconColor}
-        onPress={() => navigation.navigate('Feed')}
-      />
+      <Icon name="instagram" onPress={() => navigation.navigate('Feed')} />
+      <Icon name="heart-outline" onPress={() => navigation.navigate('Feed')} />
 
       <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
         <Image source={ProfileImage} style={styles.profileImage} />
@@ -45,7 +28,7 @@ const BottomTab = ({navigation}) => {
 
 const styles = StyleSheet.create({
   bottomTab: {
-    backgroundColor: bgColor,
+    backgroundColor: theme.colors.white,
     position: 'absolute',
     bottom: 0,
     width: '100%',
@@ -57,8 +40,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   profileImage: {
-    height: iconSize,
-    width: iconSize,
+    height: theme.sizes.icon,
+    width: theme.sizes.icon,
     borderRadius: 15,
   },
 });
