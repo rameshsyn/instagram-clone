@@ -1,13 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
 import Icon from './Icon';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import ProfileImage from '../assets/images/michael-dam.jpg';
 import {useNavigation} from '@react-navigation/native';
 import theme from '../config/theme';
+import AddMediaModal from './AddMediaModal';
 
 const BottomTab = () => {
   const navigation = useNavigation();
+
   return (
     <View style={styles.bottomTab}>
       <Icon name="home-outline" onPress={() => navigation.navigate('Feed')} />
@@ -16,7 +19,10 @@ const BottomTab = () => {
         name="search"
         onPress={() => navigation.navigate('Search')}
       />
-      <Icon name="instagram" onPress={() => navigation.navigate('Feed')} />
+      <AddMediaModal
+        triggerComponent={<Icon name="plus-square" component={FeatherIcon} />}
+      />
+
       <Icon name="heart-outline" onPress={() => navigation.navigate('Feed')} />
 
       <TouchableOpacity onPress={() => navigation.navigate('Profile')}>

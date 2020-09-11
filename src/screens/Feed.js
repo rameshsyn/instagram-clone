@@ -3,6 +3,7 @@ import ScreenLayout from '../components/ScreenLayout';
 import Stories from '../components/Story/index';
 import Posts from '../components/Post';
 import {ScrollView} from 'react-native';
+import TopTab from '../components/TopTab';
 
 const stories = [
   {
@@ -102,6 +103,7 @@ const posts = [
 const Feed = () => {
   return (
     <ScreenLayout>
+      <TopTab />
       <ScrollView>
         <Stories stories={stories} />
         <Posts posts={posts} />
