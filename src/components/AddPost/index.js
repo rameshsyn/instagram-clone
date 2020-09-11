@@ -26,8 +26,8 @@ const Video = () => {
   return <Camera />;
 };
 const AddMediaModal = ({triggerComponent}) => {
-  const [modalVisible, setModalVisible] = useState(true);
-  const [activeTab, setActiveTab] = useState(Tab.PHOTO);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState(Tab.GALLERY);
   const handleModalToggle = () => {
     setModalVisible((visible) => !visible);
   };
@@ -56,7 +56,7 @@ const AddMediaModal = ({triggerComponent}) => {
           {activeTab === Tab.PHOTO && <Photo />}
           {activeTab === Tab.VIDEO && <Video />}
         </View>
-        <View style={styles.container}>
+        <View style={styles.modalBottom}>
           <TouchableWithoutFeedback
             onPress={() => handleActiveTabChange(Tab.GALLERY)}>
             <Text
@@ -97,7 +97,7 @@ const AddMediaModal = ({triggerComponent}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  modalBottom: {
     width: '100%',
     flex: 1,
     position: 'absolute',
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 15,
     backgroundColor: theme.colors.white,
+    zIndex: 10,
   },
   modalTop: {
     position: 'absolute',
@@ -118,6 +119,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
     backgroundColor: theme.colors.white,
+    zIndex: 10,
   },
   modalTopLabel: {
     flexDirection: 'row',
@@ -135,8 +137,8 @@ const styles = StyleSheet.create({
     color: 'skyblue',
   },
   featureContainer: {
-    marginTop: 100,
-    paddingTop: 50,
+    // marginTop: 200,
+    // marginBottom: 50,
   },
   tab: {
     color: 'gray',

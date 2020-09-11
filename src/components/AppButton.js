@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  Text,
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import {Text, View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import theme from '../config/theme';
 
 const AppButton = ({title, style, onPress}) => {

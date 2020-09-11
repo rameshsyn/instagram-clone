@@ -1,43 +1,47 @@
-import React, {useRef} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
 import AppButton from '../AppButton';
 import {RNCamera} from 'react-native-camera';
 
 const Camera = () => {
   const camera = useRef();
+  const [image, setImage] = useState(null);
 
-  const handlePress = () => {
-    console.log('press');
-    // takePicture = async () => {
-    //   if (this.camera) {
-    //     const options = { quality: 0.5, base64: true };
-    //     const data = await this.camera.takePictureAsync(options);
-    //     console.log(data.uri);
-    //   }
-    // };
+  const handlePress = async () => {
+    if (camera.current) {
+      const options = {quality: 0.5, base64: true};
+      const data = await camera.current.takePictureAsync(options);
+      setImage(data.uri);
+    }
   };
   return (
     <View style={styles.container}>
-      <RNCamera
-        ref={camera}
-        style={styles.preview}
-        type={RNCamera.Constants.Type.back}
-        flashMode={RNCamera.Constants.FlashMode.on}
-        androidCameraPermissionOptions={{
-          title: 'Permission to use camera',
-          message: 'We need your permission to use your camera',
-          buttonPositive: 'Ok',
-          buttonNegative: 'Cancel',
-        }}
-        androidRecordAudioPermissionOptions={{
-          title: 'Permission to use audio recording',
-          message: 'We need your permission to use your audio',
-          buttonPositive: 'Ok',
-          buttonNegative: 'Cancel',
-        }}
-      />
-      <View>
-        <AppButton title="Take pic" onPress={handlePress} />
+      <View style={styles.topSection}>
+        <RNCamera
+          ref={camera}
+          style={styles.preview}
+          type={RNCamera.Constants.Type.back}
+          flashMode={RNCamera.Constants.FlashMode.on}
+          ratio="4:5"
+          androidCameraPermissionOptions={{
+            title: 'Permission to use camera',
+            message: 'We need your permission to use your camera',
+            buttonPositive: 'Ok',
+            buttonNegative: 'Cancel',
+          }}
+          androidRecordAudioPermissionOptions={{
+            title: 'Permission to use audio recording',
+            message: 'We need your permission to use your audio',
+            buttonPositive: 'Ok',
+            buttonNegative: 'Cancel',
+          }}
+        />
+      </View>
+      <View style={styles.bottomSection}>
+        <AppButton style={{flex: 0}} title="Take pic" onPress={handlePress} />
+        {image && (
+          <Image source={{uri: image}} style={{height: 50, width: 50}} />
+        )}
       </View>
     </View>
   );
@@ -45,15 +49,17 @@ const Camera = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: 'black',
     height: '100%',
   },
   preview: {
     flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+  },
+  topSection: {
+    flex: 1,
+  },
+  bottomSection: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
 export default Camera;
