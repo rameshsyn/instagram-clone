@@ -6,7 +6,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import ProfileImage from '../assets/images/michael-dam.jpg';
 import {useNavigation} from '@react-navigation/native';
 import theme from '../config/theme';
-import AddMediaModal from './AddMediaModal';
+import AddPost from './AddPost';
 
 const BottomTab = () => {
   const navigation = useNavigation();
@@ -19,7 +19,7 @@ const BottomTab = () => {
         name="search"
         onPress={() => navigation.navigate('Search')}
       />
-      <AddMediaModal
+      <AddPost
         triggerComponent={<Icon name="plus-square" component={FeatherIcon} />}
       />
 
