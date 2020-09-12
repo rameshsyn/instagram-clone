@@ -1,12 +1,31 @@
 import React from 'react';
-import {Image, Linking, StyleSheet, View, Text} from 'react-native';
+import {
+  Image,
+  Linking,
+  StyleSheet,
+  View,
+  Text,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import ScreenLayout from '../components/ScreenLayout';
 import Icon from '../components/Icon';
 import Octicons from 'react-native-vector-icons/Octicons';
 import AppButton from '../components/AppButton';
 import {ScrollView} from 'react-native-gesture-handler';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
+import {useNavigation} from '@react-navigation/native';
+import {useAuth} from '../authContext';
+
+const Drawer = createDrawerNavigator();
 
 const TopSection = () => {
+  const navigation = useNavigation();
+
   return (
     <>
       <View style={styles.topSection}>
@@ -15,7 +34,9 @@ const TopSection = () => {
           <Icon name="chevron-down" />
         </View>
         <View>
-          <Icon name="three-bars" component={Octicons} />
+          <TouchableWithoutFeedback onPress={navigation.openDrawer}>
+            <Icon name="three-bars" component={Octicons} />
+          </TouchableWithoutFeedback>
         </View>
       </View>
     </>
@@ -64,12 +85,12 @@ const ProfileDetails = () => {
 
 const ProfileAction = ({isLoggedIn}) => {
   return (
-    <View>
+    <View style={styles.profileActionContainer}>
       {isLoggedIn ? (
         <AppButton title="Edit Profile" />
       ) : (
         <View style={styles.profileAction}>
-          <AppButton title="Follow" style={{marginRight: 10}} />
+          <AppButton title="Follow" color="primary" style={{marginRight: 10}} />
           <AppButton title="Message" />
         </View>
       )}
@@ -105,7 +126,8 @@ const images = [
       'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
   },
 ];
-const Profile = () => {
+
+const ProfileScreen = () => {
   return (
     <ScreenLayout>
       <ScrollView>
@@ -116,6 +138,28 @@ const Profile = () => {
         <Gallery images={images} />
       </ScrollView>
     </ScreenLayout>
+  );
+};
+
+const ProfileDrawerContent = (props) => {
+  const {logOutUser} = useAuth();
+
+  return (
+    <DrawerContentScrollView {...props}>
+      {/* <DrawerItemList {...props} /> */}
+      <DrawerItem label="Log out" onPress={logOutUser} />
+    </DrawerContentScrollView>
+  );
+};
+const Profile = () => {
+  return (
+    <Drawer.Navigator
+      drawerPosition="right"
+      drawerType="slide"
+      initialRouteName="ProfileScreen"
+      drawerContent={(props) => <ProfileDrawerContent {...props} />}>
+      <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+    </Drawer.Navigator>
   );
 };
 
@@ -158,8 +202,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingBottom: 20,
   },
+  profileActionContainer: {
+    paddingHorizontal: 10,
+  },
+
   profileAction: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   fullName: {
     fontWeight: 'bold',
@@ -172,12 +221,13 @@ const styles = StyleSheet.create({
   gallery: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     flexWrap: 'wrap',
     paddingVertical: 20,
   },
   galleryImage: {
-    height: 130,
-    width: 130,
+    height: 125,
+    width: 125,
     margin: 2,
   },
 });

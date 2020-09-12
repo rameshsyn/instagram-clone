@@ -1,34 +1,55 @@
 import React from 'react';
-import {Text, View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import PropTypes from 'prop-types';
+import {Text, View, StyleSheet, TouchableHighlight} from 'react-native';
 import theme from '../config/theme';
 
-const AppButton = ({title, style, onPress}) => {
+const AppButton = ({title, style, onPress, color}) => {
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
-      <View style={[styles.button, style]}>
-        <Text style={styles.text}>{title}</Text>
-      </View>
-    </TouchableWithoutFeedback>
+    <TouchableHighlight
+      onPress={onPress}
+      style={[styles.button, color === 'primary' ? styles.primary : {}, style]}
+      underlayColor={
+        color === 'primary' ? theme.colors.btnColor : theme.colors.white
+      }
+      activeOpacity={0.7}>
+      <Text
+        style={[styles.text, color === 'primary' ? styles.primaryText : {}]}>
+        {title}
+      </Text>
+    </TouchableHighlight>
   );
 };
 
 AppButton.defaultProps = {
   style: {},
   onPress: () => {},
+  color: 'default',
+};
+
+AppButton.propTypes = {
+  color: PropTypes.oneOf(['default', 'primary']),
 };
 
 const styles = StyleSheet.create({
   button: {
-    flex: 1,
     backgroundColor: theme.colors.background,
-    paddingVertical: 10,
+    padding: 15,
     borderWidth: 1,
     borderColor: '#aaa',
     borderRadius: 5,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  primaryText: {
+    color: theme.colors.white,
+  },
+  primary: {
+    backgroundColor: theme.colors.btnColor,
   },
 });
 
