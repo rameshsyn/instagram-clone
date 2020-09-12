@@ -6,6 +6,7 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import AppTextInput from '../components/AppTextInput';
 import {useAuth} from '../authContext';
+import Icon from '../components/Icon';
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email().required().label('Email'),
@@ -71,10 +72,14 @@ const Login = ({navigation}) => {
             {submitError && !isSubmitting && (
               <Text style={styles.submitError}>{submitError}</Text>
             )}
-            <AppButton title="Log in" color="primary" onPress={handleSubmit} />
+            <AppButton
+              title={isSubmitting ? 'Logging in...' : 'Log In'}
+              color="primary"
+              onPress={handleSubmit}
+            />
             <Text style={styles.forgotSection}>
-              Forgot your login details?
-              <Text style={styles.forgotText}>Get help logging in.</Text>
+              Forgot your login details?{' '}
+              <Text style={styles.forgotText}> Get help logging in.</Text>
             </Text>
             <Text style={styles.orText}>OR</Text>
             <AppButton title="Login with Facebook" color="primary" />

@@ -20,6 +20,8 @@ import {
 } from '@react-navigation/drawer';
 import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../authContext';
+import theme from '../config/theme';
+import AntIcons from 'react-native-vector-icons/AntDesign';
 
 const Drawer = createDrawerNavigator();
 
@@ -142,12 +144,63 @@ const ProfileScreen = () => {
 };
 
 const ProfileDrawerContent = (props) => {
-  const {logOutUser} = useAuth();
+  const {user, logOutUser} = useAuth();
 
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView
+      {...props}
+      contentContainerStyle={styles.drawerContainer}>
       {/* <DrawerItemList {...props} /> */}
-      <DrawerItem label="Log out" onPress={logOutUser} />
+      <View style={styles.drawerTopSection}>
+        <DrawerItem
+          label={user ? user.email : ''}
+          style={styles.drawerTopUsername}
+          labelStyle={styles.drawerTopUsernameText}
+        />
+        <DrawerItem
+          label="Archive"
+          labelStyle={styles.drawerItemText}
+          icon={() => <Icon size={30} name="cog-counterclockwise" />}
+          onPress={() => console.log('Drawer item clicked')}
+        />
+        <DrawerItem
+          label="Your Activity"
+          labelStyle={styles.drawerItemText}
+          icon={() => <Icon size={30} name="clock-fast" />}
+          onPress={() => console.log('Drawer item clicked')}
+        />
+        <DrawerItem
+          label="QR Code"
+          labelStyle={styles.drawerItemText}
+          icon={() => <Icon size={30} name="qrcode-scan" />}
+          onPress={() => console.log('Drawer item clicked')}
+        />
+        <DrawerItem
+          label="Saved"
+          labelStyle={styles.drawerItemText}
+          icon={() => <Icon size={30} name="content-save-outline" />}
+          onPress={() => console.log('Drawer item clicked')}
+        />
+        <DrawerItem
+          label="Close Friends"
+          labelStyle={styles.drawerItemText}
+          icon={() => <Icon size={30} name="account-star-outline" />}
+          onPress={() => console.log('Drawer item clicked')}
+        />
+        <DrawerItem
+          label="Discover People"
+          labelStyle={styles.drawerItemText}
+          icon={() => <Icon size={30} name="account-plus-outline" />}
+          onPress={() => console.log('Drawer item clicked')}
+        />
+      </View>
+      <DrawerItem
+        label="Log Out"
+        labelStyle={styles.drawerItemText}
+        icon={() => <Icon size={30} name="logout" />}
+        onPress={logOutUser}
+        style={styles.drawerBottomSection}
+      />
     </DrawerContentScrollView>
   );
 };
@@ -164,6 +217,33 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
+  drawerContainer: {
+    flex: 1,
+  },
+  drawerItemText: {
+    color: theme.colors.black,
+    marginLeft: -22,
+    fontSize: 17,
+  },
+  drawerTopSection: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  drawerTopUsername: {
+    borderBottomColor: theme.colors.grey,
+    borderBottomWidth: 1,
+    width: '100%',
+  },
+  drawerTopUsernameText: {
+    fontWeight: 'bold',
+    color: theme.colors.black,
+  },
+  drawerBottomSection: {
+    height: 55,
+    width: '100%',
+    borderTopColor: theme.colors.grey,
+    borderTopWidth: 1,
+  },
   profileImage: {
     height: 100,
     width: 100,
