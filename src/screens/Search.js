@@ -1,62 +1,51 @@
-import React from 'react';
-import { SearchBar} from 'react-native-elements';
-import ScreenLayout from '../components/ScreenLayout'
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import React, {useState} from 'react';
+import {View, TextInput, StyleSheet, Text} from 'react-native';
+import Icon from '../components/Icon';
+import Feather from 'react-native-vector-icons/Feather';
+const Search = () => {
+  const [searchText, setSearchText] = useState(null);
 
-const UserDetails=()=>{
+  const handleChange = (text) => {
+    setSearchText(text);
+  };
 
-  return(
-    <TouchableWithoutFeedback >
-      <View >
-        <Image source={{
-          uri:'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
-        }}
-        style={styles.profile}
+  return (
+    <>
+      <View style={styles.searchBar}>
+        <Icon name="search" style={styles.icon} component={Feather} />
+        <TextInput
+          placeholder="Search"
+          style={styles.searchInput}
+          value={searchText}
+          onChangeText={handleChange}
         />
-        <Text>nabaraj</Text>
+        {/* <Icon name="qr-scan" style={styles.icon} /> */}
       </View>
-    </TouchableWithoutFeedback>
+      <Text>{searchText}</Text>
+    </>
   );
-}
- class Search extends React.Component {
-  state = {
-    search: '',
-  };
-
-  updateSearch = (search) => {
-    this.setState({ search });
-  };
-
-  render() {
-    const { search } = this.state;
-
-    return (
-      <ScreenLayout>
-        <SearchBar
-          placeholder="Type Here..."
-          onChangeText={this.updateSearch}
-          value={search}
-        />
-        <UserDetails/>
-      </ScreenLayout>
-    );
-  }
-}
-const styles=StyleSheet.create({
-  profile:{
-    height:80,
-    width:80,
-    borderRadius:30,
-    borderWidth:2,
-    borderColor:'orange',
-    
+};
+const styles = StyleSheet.create({
+  searchInput: {
+    height: 50,
+    width: '100%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    textAlign: 'center',
+    alignItems: 'flex-end',
+    padding: 8,
+    fontSize: 18,
   },
-})
-
+  searchBar: {
+    flex: 1,
+    flexDirection: 'row',
+    position: 'relative',
+  },
+  icon: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    alignSelf: 'center',
+  },
+});
 export default Search;

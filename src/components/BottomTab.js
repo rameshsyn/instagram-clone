@@ -23,7 +23,10 @@ const BottomTab = () => {
         triggerComponent={<Icon name="plus-square" component={FeatherIcon} />}
       />
 
-      <Icon name="heart-outline" onPress={() => navigation.navigate('Feed')} />
+      <Icon
+        name="heart-outline"
+        onPress={() => navigation.navigate('Notification')}
+      />
 
       <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
         <Image source={ProfileImage} style={styles.profileImage} />

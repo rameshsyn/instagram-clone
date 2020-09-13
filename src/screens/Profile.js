@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Image,
   Linking,
@@ -21,18 +21,20 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../authContext';
 import theme from '../config/theme';
-import AntIcons from 'react-native-vector-icons/AntDesign';
+import EditProfile from './EditProfile';
 
 const Drawer = createDrawerNavigator();
 
 const TopSection = () => {
   const navigation = useNavigation();
+  const {user} = useAuth();
+  const {username} = user;
 
   return (
     <>
       <View style={styles.topSection}>
         <View style={styles.usernameWrap}>
-          <Text style={styles.username}>rameshsyn </Text>
+          <Text style={styles.username}>{username}</Text>
           <Icon name="chevron-down" />
         </View>
         <View>
@@ -46,6 +48,9 @@ const TopSection = () => {
 };
 
 const ProfileImageSection = () => {
+  const {
+    user: {following, followers},
+  } = useAuth();
   return (
     <View style={styles.profileImageSection}>
       <Image
@@ -61,11 +66,11 @@ const ProfileImageSection = () => {
           <Text>Posts</Text>
         </View>
         <View>
-          <Text style={styles.infoValue}>242</Text>
+          <Text style={styles.infoValue}>{followers.length}</Text>
           <Text>Followers</Text>
         </View>
         <View>
-          <Text style={styles.infoValue}>223</Text>
+          <Text style={styles.infoValue}>{following.length}</Text>
           <Text>Following</Text>
         </View>
       </View>
@@ -74,22 +79,35 @@ const ProfileImageSection = () => {
 };
 
 const ProfileDetails = () => {
+  const {
+    user: {fullName, bio, website},
+  } = useAuth();
   return (
     <View style={styles.profileDetails}>
-      <Text style={styles.fullName}>Ramesh Syangtan </Text>
-      <Text>Developer | Traveler </Text>
-      <Text onPress={() => Linking.openURL('http://rameshsyn.codes')}>
-        rameshsyn.codes
-      </Text>
+      <Text style={styles.fullName}>{fullName}</Text>
+      <Text>{bio}</Text>
+      <Text onPress={() => Linking.openURL({website})}>{website}</Text>
     </View>
   );
 };
 
 const ProfileAction = ({isLoggedIn}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleModalToggle = () => {
+    setModalVisible((visible) => !visible);
+  };
+
   return (
     <View style={styles.profileActionContainer}>
       {isLoggedIn ? (
-        <AppButton title="Edit Profile" />
+        <>
+          <AppButton title="Edit Profile" onPress={handleModalToggle} />
+          <EditProfile
+            modalVisible={modalVisible}
+            onModalToggle={handleModalToggle}
+          />
+        </>
       ) : (
         <View style={styles.profileAction}>
           <AppButton title="Follow" color="primary" style={{marginRight: 10}} />
@@ -130,13 +148,14 @@ const images = [
 ];
 
 const ProfileScreen = () => {
+  const {isLoggedIn} = useAuth();
   return (
     <ScreenLayout>
       <ScrollView>
         <TopSection />
         <ProfileImageSection />
         <ProfileDetails />
-        <ProfileAction />
+        <ProfileAction isLoggedIn={isLoggedIn} />
         <Gallery images={images} />
       </ScrollView>
     </ScreenLayout>
@@ -145,6 +164,7 @@ const ProfileScreen = () => {
 
 const ProfileDrawerContent = (props) => {
   const {user, logOutUser} = useAuth();
+  const {username} = user;
 
   return (
     <DrawerContentScrollView
@@ -153,7 +173,7 @@ const ProfileDrawerContent = (props) => {
       {/* <DrawerItemList {...props} /> */}
       <View style={styles.drawerTopSection}>
         <DrawerItem
-          label={user ? user.email : ''}
+          label={user ? username : ''}
           style={styles.drawerTopUsername}
           labelStyle={styles.drawerTopUsernameText}
         />
@@ -297,6 +317,7 @@ const styles = StyleSheet.create({
   infoValue: {
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 18,
   },
   gallery: {
     display: 'flex',

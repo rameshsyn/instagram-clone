@@ -6,7 +6,6 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import AppTextInput from '../components/AppTextInput';
 import {useAuth} from '../authContext';
-import Icon from '../components/Icon';
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email().required().label('Email'),
@@ -16,7 +15,7 @@ const loginSchema = Yup.object().shape({
 const Login = ({navigation}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const {loginUser} = useAuth();
+  const {loginUser, setUserState} = useAuth();
 
   const handleLogin = async (data) => {
     setIsSubmitting(true);
@@ -24,8 +23,8 @@ const Login = ({navigation}) => {
 
     const {email, password} = data;
     try {
-      const res = await loginUser(email, password);
-      console.log(res);
+      const authResponse = await loginUser(email, password);
+      await setUserState(authResponse.user);
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/wrong-password') {

@@ -7,93 +7,109 @@ import {
   TouchableWithoutFeedback,
   Image,
   ScrollView,
+  Modal,
 } from 'react-native';
 import {Formik} from 'formik';
-import AppTextInput from '../components/AppTextInput';
 import Icon from '../components/Icon';
 import theme from '../config/theme';
 import AppFormField from '../components/AppFormField';
+import {useAuth} from '../authContext';
+import {updateData} from '../firebase/auth';
 
-const EditProfile = () => {
+const EditProfile = ({modalVisible, onModalToggle}) => {
+  const {user} = useAuth();
+  const {
+    uid,
+    bio,
+    email,
+    fullName,
+    gender,
+    phone,
+    photoUrl,
+    username,
+    website,
+  } = user;
+  const handleEditProfile = async (data) => {
+    try {
+      await updateData('Users', uid, data);
+      onModalToggle();
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <>
-      <View style={styles.topBar}>
-        <View style={styles.topBarLabel}>
-          <TouchableHighlight>
-            <Icon name="close" size={20} />
-          </TouchableHighlight>
-          <Text style={styles.topBarLabelText}>Edit Profile</Text>
-        </View>
-        <TouchableHighlight>
-          <Icon name="check" style={styles.topBarTick} />
-        </TouchableHighlight>
-      </View>
-      <ScrollView style={styles.editProfileContainer}>
-        <TouchableWithoutFeedback
-          onPress={() => console.log('Change profile photo clicked')}>
-          <View>
-            <Image
-              source={{
-                uri:
-                  'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
-              }}
-              style={styles.profileImage}
-            />
-            <Text style={styles.changeProfilePhotoText}>
-              Change Profile Photo
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
+      <Modal visible={modalVisible}>
         <Formik
-          onSubmit={(values) => console.log(values)}
+          onSubmit={handleEditProfile}
           initialValues={{
-            name: '',
-            username: '',
-            website: '',
-            bio: '',
-            email: '',
-            phone: ' ',
-            gender: '',
+            fullName,
+            username,
+            website,
+            bio,
+            email,
+            phone,
+            gender,
           }}>
-          {() => (
-            <View style={styles.formContainer}>
-              <AppFormField label="Name" name="name" value="Ramesh Syangtan" />
-              <AppFormField
-                label="Username"
-                name="username"
-                value="rameshsyn"
-              />
-              <AppFormField
-                label="Website"
-                name="website"
-                value="rameshsyn.codes"
-              />
-              <AppFormField
-                label="Bio"
-                name="bio"
-                value="A Developer || Traveller...A Developer || Traveller...A Developer || Traveller...A Developer || Traveller...A Developer || Traveller..."
-              />
-              <Text style={styles.profileInfoText}>Profile Information</Text>
-              <AppFormField
-                label="E-mail Address"
-                name="email"
-                value="rameshsyn@gmail.com"
-              />
-              <AppFormField
-                label="Phone Number"
-                name="phone"
-                value="1234567890"
-              />
-              <AppFormField label="Gender" name="gender" value="Male" />
-            </View>
+          {({handleSubmit}) => (
+            <>
+              <View style={styles.topBar}>
+                <View style={styles.topBarLabel}>
+                  <TouchableHighlight onPress={onModalToggle}>
+                    <Icon name="close" size={20} />
+                  </TouchableHighlight>
+                  <Text style={styles.topBarLabelText}>Edit Profile</Text>
+                </View>
+                <TouchableHighlight
+                  onPress={handleSubmit}
+                  underlayColor={theme.colors.white}>
+                  <Icon name="check" style={styles.topBarTick} />
+                </TouchableHighlight>
+              </View>
+              <ScrollView style={styles.editProfileContainer}>
+                <TouchableWithoutFeedback
+                  onPress={() => console.log('Change profile photo clicked')}>
+                  <View style={styles.changeProfilePhotoContainer}>
+                    <Image
+                      source={{
+                        uri:
+                          'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
+                      }}
+                      style={styles.profileImage}
+                    />
+                    <Text style={styles.changeProfilePhotoText}>
+                      Change Profile Photo
+                    </Text>
+                  </View>
+                </TouchableWithoutFeedback>
+                <View style={styles.formContainer}>
+                  <AppFormField label="Name" name="fullName" />
+                  <AppFormField label="Username" name="username" />
+                  <AppFormField label="Website" name="website" />
+                  <AppFormField label="Bio" name="bio" />
+                  <Text style={styles.profileInfoText}>
+                    Profile Information
+                  </Text>
+                  <AppFormField label="E-mail Address" name="email" />
+                  <AppFormField
+                    label="Phone Number"
+                    name="phone"
+                    keyboardType="numeric"
+                  />
+                  <AppFormField label="Gender" name="gender" />
+                </View>
+              </ScrollView>
+            </>
           )}
         </Formik>
-      </ScrollView>
+      </Modal>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  changeProfilePhotoContainer: {},
+
   changeProfilePhotoText: {
     alignSelf: 'center',
     color: theme.colors.btnColor,
