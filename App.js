@@ -12,7 +12,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {AuthProvider} from './src/authContext';
 import * as auth from './src/firebase/auth';
-import EditProfile from './src/screens/EditProfile';
+
 
 const Stack = createStackNavigator();
 
@@ -45,7 +45,7 @@ const App = () => {
             <>
               <Stack.Screen name="Feed" component={Feed} />
               <Stack.Screen name="Profile" component={Profile} />
-              <Stack.Screen name="Search" component={EditProfile} />
+              <Stack.Screen name="Search" component={Search} />
               <Stack.Screen name="Notification" component={Notification} />
             </>
           ) : (
