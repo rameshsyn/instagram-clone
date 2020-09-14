@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   TextInput,
@@ -10,66 +10,33 @@ import {
 import Icon from '../components/Icon';
 import Feather from 'react-native-vector-icons/Feather';
 import ScreenLayout from '../components/ScreenLayout';
+import {fetchAllUsers} from '../firebase/auth';
+import theme from '../config/theme';
+
 const Search = () => {
   const [searchText, setSearchText] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const fetchedUsers = await fetchAllUsers();
+      const fetchedUsersDocs = fetchedUsers.docs;
+      const fetchedUsersData = fetchedUsers.docs.map((doc) => doc._data);
+      setUsers(fetchedUsersData);
+    };
+    fetchUsers();
+  }, []);
 
   const handleChange = (text) => {
     setSearchText(text);
+    const filteredUsers = users.filter((user) => user.username.includes(text));
+    setFilteredUsers(filteredUsers);
   };
 
-  const stories = [
-    {
-      image:
-        'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
-      username: 'rameshsyn',
-    },
-    {
-      image:
-        'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/104178885_549712812376841_4953640171997264339_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=YQtDrY325UEAX_QGjYx&oh=72f9fd7b82de9f48ea265f37da065b4d&oe=5F831344',
-      username: 'baladnes',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1599577180570-74005925b055?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1049&q=80',
-      username: 'raitingtong',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1599526449314-12d6ca2dde92?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80',
-      username: 'david',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1599651533235-49858dacc602?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
-      username: 'janedoejanedoe',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1599651533235-49858dacc602?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
-      username: 'janedoejanedoe',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1599651533235-49858dacc602?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
-      username: 'janedoejanedoe',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1599651533235-49858dacc602?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
-      username: 'janedoejanedoe',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1599651533235-49858dacc602?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
-      username: 'janedoejanedoe',
-    },
-  ];
-
-  const filter = (items, text) => {
-    return items.filter((x) => x.username.includes(text));
-  };
-
-  const filteredStories = filter(stories, searchText);
+  // When a user enters a character in search input
+  // query user with name or username that contains the entered character
+  // and display returned users
 
   return (
     <ScreenLayout>
@@ -83,17 +50,23 @@ const Search = () => {
         />
         {/* <Icon name="qr-scan" style={styles.icon} /> */}
       </View>
-      <ScrollView>
-        {filteredStories.map((item, i) => (
-          <View key={i} style={styles.items}>
-            <Image source={{uri: item.image}} style={styles.image} />
-            <Text style={styles.text}>{item.username}</Text>
+      <View>
+        {filteredUsers.map(({photoUrl, username, fullName}) => (
+          <View key={username} style={styles.userContainer}>
+            <View style={styles.profilePhotoContainer}>
+              <Image source={{uri: photoUrl}} style={styles.profilePhoto} />
+            </View>
+            <View style={styles.userNames}>
+              <Text style={styles.usernameText}>{username}</Text>
+              <Text style={styles.fullNameText}>{fullName}</Text>
+            </View>
           </View>
         ))}
-      </ScrollView>
+      </View>
     </ScreenLayout>
   );
 };
+
 const styles = StyleSheet.create({
   searchInput: {
     height: 50,
@@ -117,18 +90,28 @@ const styles = StyleSheet.create({
     left: 10,
     alignSelf: 'center',
   },
-  image: {
-    width: 80,
-    height: 80,
-    marginBottom: 30,
-    borderRadius: 40,
-    borderWidth: 5,
-    borderColor: 'orange',
+  profilePhoto: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 2,
+    borderColor: theme.colors.white,
   },
-  text: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginLeft: 20,
+  profilePhotoContainer: {
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: theme.colors.danger,
+  },
+  usernameText: {
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  fullNameText: {
+    color: theme.colors.grey,
+    fontSize: 16,
+  },
+  userNames: {
+    marginLeft: 15,
   },
   items: {
     display: 'flex',
@@ -136,5 +119,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 50,
   },
+  userContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
 });
+
 export default Search;

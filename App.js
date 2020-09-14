@@ -22,6 +22,7 @@ const App = () => {
 
   const setUserState = async (authUser) => {
     const response = await auth.fetchUserByAuthUid(authUser.uid);
+    console.log(response);
     setUser(response._data);
   };
 
@@ -51,6 +52,7 @@ const App = () => {
         .doc(user.uid)
         .onSnapshot((documentSnapshot) => {
           const data = documentSnapshot.data();
+          console.log(data);
           setUser(data);
         });
       return () => {

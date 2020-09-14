@@ -28,7 +28,7 @@ const Drawer = createDrawerNavigator();
 const TopSection = () => {
   const navigation = useNavigation();
   const {user} = useAuth();
-  const {username} = user;
+  const username = user ? user.username : '';
 
   return (
     <>
@@ -47,19 +47,32 @@ const TopSection = () => {
   );
 };
 
-const ProfileImageSection = () => {
-  const {
-    user: {following, followers},
-  } = useAuth();
+const ImageEdit = () => {
+  const {user} = useAuth();
+  const imageprofile = user ? user.photoUrl : '';
+  console.log(imageprofile);
   return (
-    <View style={styles.profileImageSection}>
+    <View>
       <Image
         source={{
-          uri:
-            'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
+          uri: imageprofile,
         }}
         style={styles.profileImage}
       />
+    </View>
+  );
+};
+
+const ProfileImageSection = () => {
+  const {user} = useAuth();
+  const followers = user ? user.followers : '';
+  const following = user ? user.following : '';
+
+  return (
+    <View style={styles.profileImageSection}>
+      <View>
+        <ImageEdit />
+      </View>
       <View style={styles.profileStats}>
         <View>
           <Text style={styles.infoValue}>17</Text>
@@ -79,9 +92,11 @@ const ProfileImageSection = () => {
 };
 
 const ProfileDetails = () => {
-  const {
-    user: {fullName, bio, website},
-  } = useAuth();
+  const {user} = useAuth();
+  const fullName = user ? user.fullName : '';
+  const bio = user ? user.bio : '';
+  const website = user ? user.website : '';
+
   return (
     <View style={styles.profileDetails}>
       <Text style={styles.fullName}>{fullName}</Text>
@@ -164,7 +179,7 @@ const ProfileScreen = () => {
 
 const ProfileDrawerContent = (props) => {
   const {user, logOutUser} = useAuth();
-  const {username} = user;
+  const username = user ? user.username : '';
 
   return (
     <DrawerContentScrollView
@@ -173,7 +188,7 @@ const ProfileDrawerContent = (props) => {
       {/* <DrawerItemList {...props} /> */}
       <View style={styles.drawerTopSection}>
         <DrawerItem
-          label={user ? username : ''}
+          label={username}
           style={styles.drawerTopUsername}
           labelStyle={styles.drawerTopUsernameText}
         />
@@ -224,6 +239,7 @@ const ProfileDrawerContent = (props) => {
     </DrawerContentScrollView>
   );
 };
+
 const Profile = () => {
   return (
     <Drawer.Navigator

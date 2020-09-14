@@ -4,7 +4,7 @@ export default {
     charcoal: '#333',
     white: '#fff',
     black: '#000',
-    grey: '#bbb',
+    grey: '#aaa',
     btnColor: '#0095ff',
     danger: 'crimson',
   },

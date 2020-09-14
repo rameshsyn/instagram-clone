@@ -3,11 +3,13 @@ import {Text, StyleSheet, View} from 'react-native';
 import AppTextInput from './AppTextInput';
 import theme from '../config/theme';
 
-const AppFormField = ({label, name, ...rest}) => {
+const AppFormField = ({label, name, hideAppTextInput, ...rest}) => {
   return (
     <View style={styles.formField}>
       <Text style={styles.labelText}>{label}</Text>
-      <AppTextInput style={styles.input} name={name} {...rest} />
+      {!hideAppTextInput && (
+        <AppTextInput style={styles.input} name={name} {...rest} />
+      )}
     </View>
   );
 };

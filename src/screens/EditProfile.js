@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -14,8 +14,10 @@ import Icon from '../components/Icon';
 import theme from '../config/theme';
 import AppFormField from '../components/AppFormField';
 import {useAuth} from '../authContext';
+import {Picker} from '@react-native-community/picker';
 
 const EditProfile = ({modalVisible, onModalToggle}) => {
+  const [personGender, setPersonGender] = useState('');
   const {user, updateData} = useAuth();
   const {
     uid,
@@ -29,8 +31,11 @@ const EditProfile = ({modalVisible, onModalToggle}) => {
     website,
   } = user;
   const handleEditProfile = async (data) => {
+    const tempData = {...data};
+    tempData.gender = personGender;
+
     try {
-      await updateData('Users', uid, data);
+      await updateData('Users', uid, tempData);
       onModalToggle();
     } catch (err) {
       console.error(err);
@@ -71,12 +76,13 @@ const EditProfile = ({modalVisible, onModalToggle}) => {
                   <View style={styles.changeProfilePhotoContainer}>
                     <Image
                       source={{
-                        uri:
-                          'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
+                        uri: photoUrl,
                       }}
                       style={styles.profileImage}
                     />
-                    <Text style={styles.changeProfilePhotoText}>
+                    <Text
+                      style={styles.changeProfilePhotoText}
+                      onPress={() => console.log('change pic clicked')}>
                       Change Profile Photo
                     </Text>
                   </View>
@@ -95,7 +101,18 @@ const EditProfile = ({modalVisible, onModalToggle}) => {
                     name="phone"
                     keyboardType="numeric"
                   />
-                  <AppFormField label="Gender" name="gender" />
+                  <AppFormField label="Gender" name="gender" hideAppTextInput />
+                  <Picker
+                    selectedValue={personGender}
+                    mode="dropdown"
+                    style={styles.genderDropdown}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setPersonGender(itemValue)
+                    }>
+                    <Picker.Item label="Male" value="male" />
+                    <Picker.Item label="Female" value="female" />
+                    <Picker.Item label="Other" value="other" />
+                  </Picker>
                 </View>
               </ScrollView>
             </>
@@ -121,6 +138,7 @@ const styles = StyleSheet.create({
   formContainer: {
     paddingHorizontal: 10,
   },
+  genderDropdown: {height: 50, width: '100%'},
   profileImage: {
     height: 120,
     width: 120,

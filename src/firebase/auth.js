@@ -37,6 +37,10 @@ export const logOutUser = () => {
   return auth().signOut();
 };
 
+export const fetchAllUsers = () => {
+  return firestore().collection('Users').get();
+};
+
 export const fetchUserByAuthUid = (Uid) => {
   return firestore().collection('Users').doc(Uid).get();
 };
