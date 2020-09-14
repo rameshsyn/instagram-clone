@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {View, TextInput,Image, StyleSheet,Text,ScrollView} from 'react-native';
+import {
+  View,
+  TextInput,
+  Image,
+  StyleSheet,
+  Text,
+  ScrollView,
+} from 'react-native';
 import Icon from '../components/Icon';
 import Feather from 'react-native-vector-icons/Feather';
 const Search = () => {
@@ -8,6 +15,7 @@ const Search = () => {
   const handleChange = (text) => {
     setSearchText(text);
   };
+
   const stories = [
     {
       image:
@@ -56,6 +64,12 @@ const Search = () => {
     },
   ];
 
+  const filter = (items, text) => {
+    return items.filter((x) => x.username.includes(text));
+  };
+
+  const filteredStories = filter(stories, searchText);
+
   return (
     <>
       <View style={styles.searchBar}>
@@ -69,17 +83,13 @@ const Search = () => {
         {/* <Icon name="qr-scan" style={styles.icon} /> */}
       </View>
       <ScrollView>
-      {stories.map((item,i)=>(
-        <View>
+        {filteredStories.map((item, i) => (
           <View key={i} style={styles.items}>
-           <Image source={{uri:item.image}} style={styles.image}/>
-           <Text style={styles.text}>{item.username}</Text>
+            <Image source={{uri: item.image}} style={styles.image} />
+            <Text style={styles.text}>{item.username}</Text>
           </View>
-          <Text>hi</Text>
-        </View>
-           ))}
-           </ScrollView>
-     
+        ))}
+      </ScrollView>
     </>
   );
 };
@@ -98,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     position: 'relative',
-    marginBottom:70,
+    marginBottom: 70,
   },
   icon: {
     position: 'absolute',
@@ -106,24 +116,24 @@ const styles = StyleSheet.create({
     left: 10,
     alignSelf: 'center',
   },
-  image:{
-    width:80,
-    height:80,
-    marginBottom:30,
-    borderRadius:40,
-    borderWidth:5,
-    borderColor:'orange',
+  image: {
+    width: 80,
+    height: 80,
+    marginBottom: 30,
+    borderRadius: 40,
+    borderWidth: 5,
+    borderColor: 'orange',
   },
-  text:{
-    alignItems:'center',
-    flexDirection:'row',
-    marginLeft:20,
+  text: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginLeft: 20,
   },
-  items:{
-    display:'flex',
-    flexDirection:'row',
-    alignItems:'center',
-    marginLeft:50,
+  items: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 50,
   },
 });
 export default Search;
