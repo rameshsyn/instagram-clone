@@ -14,10 +14,9 @@ import Icon from '../components/Icon';
 import theme from '../config/theme';
 import AppFormField from '../components/AppFormField';
 import {useAuth} from '../authContext';
-import {updateData} from '../firebase/auth';
 
 const EditProfile = ({modalVisible, onModalToggle}) => {
-  const {user} = useAuth();
+  const {user, updateData} = useAuth();
   const {
     uid,
     bio,

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Icon from '../components/Icon';
 import Feather from 'react-native-vector-icons/Feather';
+import ScreenLayout from '../components/ScreenLayout';
 const Search = () => {
   const [searchText, setSearchText] = useState(null);
 
@@ -71,7 +72,7 @@ const Search = () => {
   const filteredStories = filter(stories, searchText);
 
   return (
-    <>
+    <ScreenLayout>
       <View style={styles.searchBar}>
         <Icon name="search" style={styles.icon} component={Feather} />
         <TextInput
@@ -90,7 +91,7 @@ const Search = () => {
           </View>
         ))}
       </ScrollView>
-    </>
+    </ScreenLayout>
   );
 };
 const styles = StyleSheet.create({

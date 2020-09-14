@@ -18,7 +18,7 @@ const SignupSchema = Yup.object().shape({
 const Signup = ({navigation}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const {createUser, setUserState} = useAuth();
+  const {createUser} = useAuth();
 
   const handleSignup = async (data) => {
     setIsSubmitting(true);
@@ -27,7 +27,6 @@ const Signup = ({navigation}) => {
     const {email, password, username} = data;
     try {
       const authResponse = await createUser(email, password, username);
-      await setUserState(authResponse.user);
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {

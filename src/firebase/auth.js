@@ -2,11 +2,16 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {userSchema} from './schema';
 
+// Listen for authentication state change
 export const authStateChange = (onAuthStateChanged) => {
+  // State Change situation
+  // Sign in
+  // Sign out
   const unsubscribe = auth().onAuthStateChanged(onAuthStateChanged);
   return unsubscribe;
 };
 
+// Create user in firebase auth & firestore
 export const createUser = async (email, password, username) => {
   const authResponse = await auth().createUserWithEmailAndPassword(
     email,

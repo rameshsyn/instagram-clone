@@ -28,8 +28,9 @@ const App = () => {
   const onAuthStateChanged = async (authUser) => {
     try {
       if (authUser) {
-        // Double Execution
-        await setUserState(authUser);
+        await setUserState(authUser); // Goes to firestore and fetches user data for the logged user and sets to App's state.
+      } else {
+        setUser(null);
       }
     } catch (err) {
       console.error(err);
@@ -40,7 +41,6 @@ const App = () => {
 
   const logOutUser = async () => {
     await auth.logOutUser();
-    setUser(null);
   };
 
   useEffect(() => {

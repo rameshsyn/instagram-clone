@@ -15,7 +15,7 @@ const loginSchema = Yup.object().shape({
 const Login = ({navigation}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const {loginUser, setUserState} = useAuth();
+  const {loginUser} = useAuth();
 
   const handleLogin = async (data) => {
     setIsSubmitting(true);
@@ -24,7 +24,6 @@ const Login = ({navigation}) => {
     const {email, password} = data;
     try {
       const authResponse = await loginUser(email, password);
-      await setUserState(authResponse.user);
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/wrong-password') {
