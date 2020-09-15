@@ -14,6 +14,20 @@ export const userSchema = {
   following: [],
 };
 
-export const postSchema = {};
+export const postSchema = {
+  imageUrl: '',
+  caption: {
+    text: '',
+    hashTags: [],
+    mentions: [],
+  },
+  likes: [], // UserId
+  comments: [], // CommentId
+  postedBy: null, // UserId,
+  tagged: [],
+  location: '',
+};
 
 export const storySchema = {};
+
+export const commentSchema = {};

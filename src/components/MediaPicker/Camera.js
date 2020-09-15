@@ -3,7 +3,7 @@ import {StyleSheet, View, Text, Image} from 'react-native';
 import AppButton from '../AppButton';
 import {RNCamera} from 'react-native-camera';
 
-const Camera = () => {
+const Camera = ({setImageNewPost}) => {
   const camera = useRef();
   const [image, setImage] = useState(null);
 
@@ -12,8 +12,10 @@ const Camera = () => {
       const options = {quality: 0.5, base64: true};
       const data = await camera.current.takePictureAsync(options);
       setImage(data.uri);
+      setImageNewPost(data.uri);
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
@@ -38,7 +40,7 @@ const Camera = () => {
         />
       </View>
       <View style={styles.bottomSection}>
-        <AppButton style={{flex: 0}} title="Take pic" onPress={handlePress} />
+        <AppButton style={{flex: 0}} title="Take " onPress={handlePress} />
         {image && (
           <Image source={{uri: image}} style={{height: 50, width: 50}} />
         )}

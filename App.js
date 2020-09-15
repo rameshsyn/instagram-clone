@@ -22,7 +22,6 @@ const App = () => {
 
   const setUserState = async (authUser) => {
     const response = await auth.fetchUserByAuthUid(authUser.uid);
-    console.log(response);
     setUser(response._data);
   };
 
