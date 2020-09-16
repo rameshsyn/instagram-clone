@@ -51,7 +51,7 @@ const App = () => {
         .doc(user.uid)
         .onSnapshot((documentSnapshot) => {
           const data = documentSnapshot.data();
-          console.log(data);
+          console.log(`User doc snap Change`, data);
           setUser(data);
         });
       return () => {
@@ -74,10 +74,9 @@ const App = () => {
           }}>
           {isLoggedIn ? (
             <>
-
-              <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="Feed" component={Feed} />
               <Stack.Screen name="Profile" component={Profile} />
+              <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="Search" component={Search} />
             </>
           ) : (

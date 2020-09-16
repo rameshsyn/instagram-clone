@@ -1,6 +1,7 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {userSchema} from './schema';
+import {userSchema, postSchema} from './schema';
+import storage from '@react-native-firebase/storage';
 
 // Listen for authentication state change
 export const authStateChange = (onAuthStateChanged) => {
@@ -27,6 +28,32 @@ export const createUser = async (email, password, username) => {
       uid: authResponse.user.uid,
     });
   return authResponse;
+};
+
+// Upload post image to firebase storage and save image url with
+// other post info to firestore Posts collection.
+export const createPost = async (imageUrl, caption, uid) => {
+  const randomFileName = Math.random().toString(36).slice(-9);
+  const STORAGE_PATH = `/images/${uid}/${randomFileName}`;
+
+  // Get the storage reference
+  const reference = storage().ref(STORAGE_PATH);
+
+  // Upload to firebase storage
+  await reference.putFile(imageUrl);
+
+  // get download url from firebase storage
+  const url = await storage().ref(STORAGE_PATH).getDownloadURL();
+
+  // save download url and other post info to firestore.
+  await firestore()
+    .collection('Posts')
+    .add({
+      ...postSchema,
+      imageUrl: url,
+      caption,
+      postedBy: uid,
+    });
 };
 
 export const loginUser = (email, password) => {

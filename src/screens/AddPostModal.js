@@ -37,9 +37,8 @@ const AddPostModal = ({triggerComponent}) => {
       onNextPress={handleNext}
     />
   );
-
   const NewPostShareScreen = (props) => (
-    <NewPostShare {...props} base64Image={base64Image} />
+    <NewPostShare {...props} base64Image={base64Image} onClose={handleClose} />
   );
 
   return (

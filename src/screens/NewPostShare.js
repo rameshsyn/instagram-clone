@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   View,
@@ -12,11 +12,20 @@ import theme from '../config/theme';
 import Icon from '../components/Icon';
 // import AppTextInput from '../components/AppTextInput';
 import Feather from 'react-native-vector-icons/Feather';
+import {createPost} from '../firebase/auth';
+import {useAuth} from '../authContext';
 
-const TopBar = () => {
+const TopBar = ({base64Image, caption, onClose}) => {
   const navigation = useNavigation();
+  const {user} = useAuth();
+
   const handleArrowClick = () => {
     navigation.goBack();
+  };
+
+  const handleShare = (base64Image, caption) => {
+    createPost(base64Image, caption, user.uid);
+    onClose();
   };
 
   return (
@@ -29,17 +38,27 @@ const TopBar = () => {
         </TouchableWithoutFeedback>
         <Text style={styles.textnew}>New Post</Text>
         <View>
-          <Text style={styles.share}>Share</Text>
+          <Text
+            style={styles.share}
+            onPress={() => handleShare(base64Image, caption)}>
+            Share
+          </Text>
         </View>
       </View>
     </>
   );
 };
 
-const NewPostShare = ({base64Image}) => {
+const NewPostShare = ({base64Image, onClose}) => {
+  const [caption, setCaption] = useState('');
+
+  const handleCaptionChange = (value) => {
+    setCaption(value);
+  };
+
   return (
     <>
-      <TopBar />
+      <TopBar base64Image={base64Image} caption={caption} onClose={onClose} />
       <View style={styles.captionContainer}>
         {/* Put selected image here */}
         <Image
@@ -49,13 +68,19 @@ const NewPostShare = ({base64Image}) => {
           style={styles.profilePhoto}
         />
 
-        <TextInput name="caption" placeholder="Write a caption..." multiline />
+        <TextInput
+          name="caption"
+          placeholder="Write a caption..."
+          onChangeText={handleCaptionChange}
+          multiline
+        />
       </View>
       <Text style={styles.tagPeopleText}>Tag People</Text>
       <Text style={styles.addLocText}>Add Location</Text>
     </>
   );
 };
+
 const styles = StyleSheet.create({
   captionContainer: {
     flexDirection: 'row',

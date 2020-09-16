@@ -28,23 +28,6 @@ const Gallery = ({setImageNewPost}) => {
     return status === 'granted';
   };
 
-  const getPhotos = async () => {
-    try {
-      const hasPermission = await hasAndroidPermission();
-      if (hasPermission) {
-        const response = await CameraRoll.getPhotos({first: 20});
-        const images = response.edges.map((edge) => {
-          return edge.node?.image?.uri;
-        });
-        setImages(images);
-        setSelectedImage(images[0]);
-        setSelectedIndex(0);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleImageSelect = (image, index) => {
     setSelectedImage(image);
     setImageNewPost(image);
@@ -52,7 +35,31 @@ const Gallery = ({setImageNewPost}) => {
   };
 
   useEffect(() => {
+    let isUnmounted = false;
+    const getPhotos = async () => {
+      try {
+        const hasPermission = await hasAndroidPermission();
+        if (hasPermission) {
+          const response = await CameraRoll.getPhotos({first: 20});
+          const images = response.edges.map((edge) => {
+            return edge.node?.image?.uri;
+          });
+
+          if (!isUnmounted) {
+            setImages(images);
+            setSelectedImage(images[0]);
+            setSelectedIndex(0);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
     getPhotos();
+
+    return () => {
+      isUnmounted = true;
+    };
   }, []);
 
   return (
