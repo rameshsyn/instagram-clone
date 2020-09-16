@@ -29,24 +29,30 @@ const AddPostModal = ({triggerComponent}) => {
     setModalVisible(true);
   };
 
-  const MediaBrowserScreen = (props) => (
-    <MediaBrowser
-      {...props}
-      setImageNewPost={setImageNewPost}
-      onClose={handleClose}
-      onNextPress={handleNext}
-    />
-  );
-  const NewPostShareScreen = (props) => (
-    <NewPostShare {...props} base64Image={base64Image} onClose={handleClose} />
-  );
-
   return (
     <>
       <Modal visible={modalVisible}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="MediaBrowser" component={MediaBrowserScreen} />
-          <Stack.Screen name="NewPostShare" component={NewPostShareScreen} />
+          <Stack.Screen name="MediaBrowser">
+            {(props) => (
+              <MediaBrowser
+                {...props}
+                setImageNewPost={setImageNewPost}
+                onClose={handleClose}
+                onNextPress={handleNext}
+              />
+            )}
+          </Stack.Screen>
+
+          <Stack.Screen name="NewPostShare">
+            {(props) => (
+              <NewPostShare
+                {...props}
+                base64Image={base64Image}
+                onClose={handleClose}
+              />
+            )}
+          </Stack.Screen>
         </Stack.Navigator>
       </Modal>
       <TouchableHighlight onPress={handleModalOpen}>
