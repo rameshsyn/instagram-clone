@@ -74,10 +74,11 @@ const App = () => {
           }}>
           {isLoggedIn ? (
             <>
+
+              <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="Feed" component={Feed} />
               <Stack.Screen name="Profile" component={Profile} />
               <Stack.Screen name="Search" component={Search} />
-              <Stack.Screen name="Notification" component={Notification} />
             </>
           ) : (
             <>
