@@ -40,10 +40,8 @@ const Camera = ({setImageNewPost}) => {
         />
       </View>
       <View style={styles.bottomSection}>
+        {image && <Image source={{uri: image}} style={styles.previewImage} />}
         <AppButton style={{flex: 0}} title="Take " onPress={handlePress} />
-        {image && (
-          <Image source={{uri: image}} style={{height: 50, width: 50}} />
-        )}
       </View>
     </View>
   );
@@ -59,9 +57,17 @@ const styles = StyleSheet.create({
   topSection: {
     flex: 1,
   },
+  previewImage: {
+    height: 125,
+    width: 100,
+    resizeMode: 'cover',
+    marginVertical: 15,
+    alignSelf: 'center',
+  },
   bottomSection: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 export default Camera;

@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Image, Text, StyleSheet} from 'react-native';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from '../Icon';
 
 const PostHeader = ({username, place, profileImage}) => {
@@ -19,7 +19,7 @@ const PostHeader = ({username, place, profileImage}) => {
         </View>
       </View>
       <View>
-        <Icon name="options" component={SimpleLineIcons} />
+        <Icon name="dots-three-vertical" component={Entypo} size={17} />
       </View>
     </View>
   );

@@ -15,7 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {createPost} from '../firebase/auth';
 import {useAuth} from '../authContext';
 
-const TopBar = ({base64Image, caption, onClose}) => {
+const TopBar = ({imageFilePath, caption, onClose}) => {
   const navigation = useNavigation();
   const {user} = useAuth();
 
@@ -23,9 +23,10 @@ const TopBar = ({base64Image, caption, onClose}) => {
     navigation.goBack();
   };
 
-  const handleShare = (base64Image, caption) => {
-    createPost(base64Image, caption, user.uid);
+  const handleShare = async (imageFilePath, caption) => {
     onClose();
+    await createPost(imageFilePath, caption, user.uid);
+    console.log('Posted');
   };
 
   return (
@@ -40,7 +41,7 @@ const TopBar = ({base64Image, caption, onClose}) => {
         <View>
           <Text
             style={styles.share}
-            onPress={() => handleShare(base64Image, caption)}>
+            onPress={() => handleShare(imageFilePath, caption)}>
             Share
           </Text>
         </View>
@@ -49,7 +50,7 @@ const TopBar = ({base64Image, caption, onClose}) => {
   );
 };
 
-const NewPostShare = ({base64Image, onClose}) => {
+const NewPostShare = ({imageFilePath, onClose}) => {
   const [caption, setCaption] = useState('');
 
   const handleCaptionChange = (value) => {
@@ -58,12 +59,16 @@ const NewPostShare = ({base64Image, onClose}) => {
 
   return (
     <>
-      <TopBar base64Image={base64Image} caption={caption} onClose={onClose} />
+      <TopBar
+        imageFilePath={imageFilePath}
+        caption={caption}
+        onClose={onClose}
+      />
       <View style={styles.captionContainer}>
         {/* Put selected image here */}
         <Image
           source={{
-            uri: base64Image,
+            uri: imageFilePath,
           }}
           style={styles.profilePhoto}
         />

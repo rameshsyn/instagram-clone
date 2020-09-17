@@ -32,7 +32,7 @@ export const createUser = async (email, password, username) => {
 
 // Upload post image to firebase storage and save image url with
 // other post info to firestore Posts collection.
-export const createPost = async (imageUrl, caption, uid) => {
+export const createPost = async (imageFilePath, caption, uid) => {
   const randomFileName = Math.random().toString(36).slice(-9);
   const STORAGE_PATH = `/images/${uid}/${randomFileName}`;
 
@@ -40,7 +40,7 @@ export const createPost = async (imageUrl, caption, uid) => {
   const reference = storage().ref(STORAGE_PATH);
 
   // Upload to firebase storage
-  await reference.putFile(imageUrl);
+  await reference.putFile(imageFilePath);
 
   // get download url from firebase storage
   const url = await storage().ref(STORAGE_PATH).getDownloadURL();
@@ -54,6 +54,25 @@ export const createPost = async (imageUrl, caption, uid) => {
       caption,
       postedBy: uid,
     });
+};
+
+// export const getImageFromStorage = async (uid) => {
+//   const STORAGE_PATH = `/images/${uid}/`;
+
+//   const imgReference = storage().ref(STORAGE_PATH);
+
+// };
+
+export const readCollectionPostedBy = async (collection, uid) => {
+  return await firestore()
+    .collection(collection)
+    .where('postedBy', '==', uid)
+    .get();
+};
+
+export const readDocument = async (collection, document) => {
+  const data = await firestore().collection(collection).doc(document).get();
+  return data;
 };
 
 export const loginUser = (email, password) => {

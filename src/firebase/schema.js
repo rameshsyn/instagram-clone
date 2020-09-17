@@ -15,6 +15,7 @@ export const userSchema = {
 };
 
 export const postSchema = {
+  pid: '',
   imageUrl: '',
   caption: {
     text: '',

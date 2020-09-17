@@ -1,19 +1,19 @@
 import React from 'react';
 import StoryCard from './StoryCard';
 import {ScrollView, StyleSheet, View} from 'react-native';
+import {useAuth} from '../../authContext';
 
 const Stories = ({stories}) => {
+  const {
+    user: {photoUrl},
+  } = useAuth();
   const storiesEl = stories.map((story, i) => (
     <StoryCard key={i} image={story.image} username={story.username} />
   ));
   return (
     <View style={styles.stories}>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        <StoryCard
-          image="https://images.unsplash.com/photo-1599651533235-49858dacc602?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80"
-          username="Your Story"
-          isAddNew
-        />
+        <StoryCard image={photoUrl} username="Your Story" isAddNew />
         {storiesEl}
       </ScrollView>
     </View>

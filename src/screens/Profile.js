@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   Linking,
@@ -22,14 +22,12 @@ import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../authContext';
 import theme from '../config/theme';
 import EditProfile from './EditProfile';
+import {readCollectionPostedBy} from '../firebase/auth';
 
 const Drawer = createDrawerNavigator();
 
-const TopSection = () => {
+const TopSection = ({username}) => {
   const navigation = useNavigation();
-  const {user} = useAuth();
-  const username = user ? user.username : '';
-
   return (
     <>
       <View style={styles.topSection}>
@@ -47,35 +45,20 @@ const TopSection = () => {
   );
 };
 
-const ImageEdit = () => {
-  const {user} = useAuth();
-  const imageprofile = user ? user.photoUrl : '';
-  console.log(imageprofile);
-  return (
-    <View>
-      <Image
-        source={{
-          uri: imageprofile,
-        }}
-        style={styles.profileImage}
-      />
-    </View>
-  );
-};
-
-const ProfileImageSection = () => {
-  const {user} = useAuth();
-  const followers = user ? user.followers : '';
-  const following = user ? user.following : '';
-
+const ProfileImageSection = ({photoUrl, postCount, followers, following}) => {
   return (
     <View style={styles.profileImageSection}>
       <View>
-        <ImageEdit />
+        <Image
+          source={{
+            uri: photoUrl,
+          }}
+          style={styles.profileImage}
+        />
       </View>
       <View style={styles.profileStats}>
         <View>
-          <Text style={styles.infoValue}>17</Text>
+          <Text style={styles.infoValue}>{postCount}</Text>
           <Text>Posts</Text>
         </View>
         <View>
@@ -91,12 +74,7 @@ const ProfileImageSection = () => {
   );
 };
 
-const ProfileDetails = () => {
-  const {user} = useAuth();
-  const fullName = user ? user.fullName : '';
-  const bio = user ? user.bio : '';
-  const website = user ? user.website : '';
-
+const ProfileDetails = ({fullName, bio, website}) => {
   return (
     <View style={styles.profileDetails}>
       <Text style={styles.fullName}>{fullName}</Text>
@@ -106,7 +84,7 @@ const ProfileDetails = () => {
   );
 };
 
-const ProfileAction = ({isLoggedIn}) => {
+const ProfileAction = ({isOwnProfile}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleModalToggle = () => {
@@ -115,7 +93,7 @@ const ProfileAction = ({isLoggedIn}) => {
 
   return (
     <View style={styles.profileActionContainer}>
-      {isLoggedIn ? (
+      {isOwnProfile ? (
         <>
           <AppButton title="Edit Profile" onPress={handleModalToggle} />
           <EditProfile
@@ -133,45 +111,66 @@ const ProfileAction = ({isLoggedIn}) => {
   );
 };
 
-const Gallery = ({images}) => {
+const Gallery = ({posts}) => {
   return (
     <View style={styles.gallery}>
-      {images.map((item, i) => (
-        <Image key={i} source={{uri: item.image}} style={styles.galleryImage} />
+      {posts.map((post, i) => (
+        <Image
+          key={i}
+          source={{uri: post.imageUrl}}
+          style={styles.galleryImage}
+        />
       ))}
     </View>
   );
 };
 
-const images = [
-  {
-    image:
-      'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
-  },
-  {
-    image:
-      'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/104178885_549712812376841_4953640171997264339_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=YQtDrY325UEAX_QGjYx&oh=72f9fd7b82de9f48ea265f37da065b4d&oe=5F831344',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1599577180570-74005925b055?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1049&q=80',
-  },
-  {
-    image:
-      'https://instagram.fktm8-1.fna.fbcdn.net/v/t51.2885-19/s150x150/53613934_278745363050360_1949360354278506496_n.jpg?_nc_ht=instagram.fktm8-1.fna.fbcdn.net&_nc_ohc=w1Bi5HcR0lQAX_Xp5UF&oh=0f1e91f68a22438d0e33d0244bb5cbb2&oe=5F835D91',
-  },
-];
+const ProfileScreen = ({route}) => {
+  const viewUser = route.params?.user;
+  const {isLoggedIn, user: loggedUser} = useAuth();
+  const user = viewUser ? viewUser : loggedUser;
+  const [posts, setPosts] = useState([]);
 
-const ProfileScreen = () => {
-  const {isLoggedIn} = useAuth();
+  const {
+    username,
+    fullName,
+    bio,
+    website,
+    photoUrl,
+    followers,
+    following,
+    uid,
+  } = user;
+
+  useEffect(() => {
+    const getPostData = async () => {
+      try {
+        const postData = await readCollectionPostedBy('Posts', uid);
+        const postDocs = postData._docs;
+        const posts = postDocs.map((doc) => doc._data);
+        setPosts(posts);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getPostData();
+  }, [user]);
+
+  const isOwnProfile = isLoggedIn && uid === loggedUser.uid;
+
   return (
     <ScreenLayout>
       <ScrollView>
-        <TopSection />
-        <ProfileImageSection />
-        <ProfileDetails />
-        <ProfileAction isLoggedIn={isLoggedIn} />
-        <Gallery images={images} />
+        <TopSection username={username} />
+        <ProfileImageSection
+          photoUrl={photoUrl}
+          followers={followers}
+          following={following}
+          postCount={posts.length}
+        />
+        <ProfileDetails fullName={fullName} bio={bio} website={website} />
+        <ProfileAction isOwnProfile={isOwnProfile} />
+        <Gallery posts={posts} />
       </ScrollView>
     </ScreenLayout>
   );
@@ -240,7 +239,7 @@ const ProfileDrawerContent = (props) => {
   );
 };
 
-const Profile = () => {
+const Profile = ({}) => {
   return (
     <Drawer.Navigator
       drawerPosition="right"

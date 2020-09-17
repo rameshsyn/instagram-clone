@@ -3,6 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import PostHeader from './PostHeader';
 import PostContent from './PostContent';
 import PostFooter from './PostFooter';
+import theme from '../../config/theme';
 
 const Post = ({
   username,
@@ -34,6 +35,7 @@ const Post = ({
 const styles = StyleSheet.create({
   post: {
     marginBottom: 10,
+    backgroundColor: theme.colors.white,
   },
 });
 

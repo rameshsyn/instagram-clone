@@ -28,7 +28,13 @@ const BottomTab = () => {
         onPress={() => navigation.navigate('Notification')}
       />
 
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('Profile', {
+            screen: 'ProfileScreen',
+            params: {user: null},
+          })
+        }>
         <Image source={ProfileImage} style={styles.profileImage} />
       </TouchableOpacity>
     </View>

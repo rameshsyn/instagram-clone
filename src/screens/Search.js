@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   View,
   TextInput,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   ScrollView,
+  TouchableHighlight,
 } from 'react-native';
 import Icon from '../components/Icon';
 import Feather from 'react-native-vector-icons/Feather';
@@ -13,15 +14,18 @@ import ScreenLayout from '../components/ScreenLayout';
 import {fetchAllUsers} from '../firebase/auth';
 import theme from '../config/theme';
 
-const Search = () => {
+// TODO:
+// When a user enters a character in search input
+// query user with name or username that contains the entered character
+// and display returned users
+
+const Search = ({navigation}) => {
   const [searchText, setSearchText] = useState(null);
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       const fetchedUsers = await fetchAllUsers();
-      const fetchedUsersDocs = fetchedUsers.docs;
       const fetchedUsersData = fetchedUsers.docs.map((doc) => doc._data);
       setUsers(fetchedUsersData);
     };
@@ -30,18 +34,20 @@ const Search = () => {
 
   const handleChange = (text) => {
     setSearchText(text);
-    const filteredUsers = users.filter((user) => user.username.includes(text));
-    setFilteredUsers(filteredUsers);
   };
 
-  // When a user enters a character in search input
-  // query user with name or username that contains the entered character
-  // and display returned users
+  const viewProfile = (user) => {
+    navigation.navigate('Profile', {screen: 'ProfileScreen', params: {user}});
+  };
 
+  const filteredUsers = useMemo(
+    () => users.filter((user) => user.username.includes(searchText)),
+    [searchText],
+  );
   return (
     <ScreenLayout>
       <View style={styles.searchBar}>
-        <Icon name="search" style={styles.icon} component={Feather} />
+        <Icon name="search" style={styles.icon} component={Feather} size={25} />
         <TextInput
           placeholder="Search"
           style={styles.searchInput}
@@ -50,19 +56,27 @@ const Search = () => {
         />
         {/* <Icon name="qr-scan" style={styles.icon} /> */}
       </View>
-      <View>
-        {filteredUsers.map(({photoUrl, username, fullName}) => (
-          <View key={username} style={styles.userContainer}>
-            <View style={styles.profilePhotoContainer}>
-              <Image source={{uri: photoUrl}} style={styles.profilePhoto} />
-            </View>
-            <View style={styles.userNames}>
-              <Text style={styles.usernameText}>{username}</Text>
-              <Text style={styles.fullNameText}>{fullName}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
+      <ScrollView>
+        {filteredUsers.map((user) => {
+          const {username, fullName, photoUrl} = user;
+          return (
+            <TouchableHighlight
+              key={username}
+              underlayColor={theme.colors.grey}
+              onPress={() => viewProfile(user)}>
+              <View style={styles.userContainer}>
+                <View style={styles.profilePhotoContainer}>
+                  <Image source={{uri: photoUrl}} style={styles.profilePhoto} />
+                </View>
+                <View style={styles.userNames}>
+                  <Text style={styles.usernameText}>{username}</Text>
+                  <Text style={styles.fullNameText}>{fullName}</Text>
+                </View>
+              </View>
+            </TouchableHighlight>
+          );
+        })}
+      </ScrollView>
     </ScreenLayout>
   );
 };
@@ -73,10 +87,8 @@ const styles = StyleSheet.create({
     width: '100%',
     borderColor: 'gray',
     borderWidth: 1,
-    textAlign: 'center',
-    alignItems: 'flex-end',
-    padding: 8,
-    fontSize: 18,
+    paddingLeft: 45,
+    fontSize: 17,
   },
   searchBar: {
     flex: 1,
@@ -88,7 +100,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     left: 10,
-    alignSelf: 'center',
   },
   profilePhoto: {
     width: 70,
@@ -100,7 +111,7 @@ const styles = StyleSheet.create({
   profilePhotoContainer: {
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: theme.colors.danger,
+    borderColor: 'tomato',
   },
   usernameText: {
     fontWeight: 'bold',

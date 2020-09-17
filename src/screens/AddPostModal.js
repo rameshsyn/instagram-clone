@@ -10,10 +10,10 @@ const Stack = createStackNavigator();
 
 const AddPostModal = ({triggerComponent}) => {
   const navigation = useNavigation();
-  const [base64Image, setBase64Image] = useState('');
+  const [imageFilePath, setImageFilePath] = useState('');
 
   const setImageNewPost = (image) => {
-    setBase64Image(image);
+    setImageFilePath(image);
   };
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -48,7 +48,7 @@ const AddPostModal = ({triggerComponent}) => {
             {(props) => (
               <NewPostShare
                 {...props}
-                base64Image={base64Image}
+                imageFilePath={imageFilePath}
                 onClose={handleClose}
               />
             )}

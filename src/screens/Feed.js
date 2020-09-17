@@ -2,8 +2,9 @@ import React from 'react';
 import ScreenLayout from '../components/ScreenLayout';
 import Stories from '../components/Story/index';
 import Posts from '../components/Post';
-import {ScrollView} from 'react-native';
+import {View, ScrollView, StyleSheet} from 'react-native';
 import TopTab from '../components/TopTab';
+import theme from '../config/theme';
 
 const stories = [
   {
@@ -103,12 +104,21 @@ const posts = [
 const Feed = () => {
   return (
     <ScreenLayout>
-      <TopTab />
-      <ScrollView>
-        <Stories stories={stories} />
-        <Posts posts={posts} />
-      </ScrollView>
+      <View style={styles.feedScreen}>
+        <TopTab />
+        <ScrollView>
+          <Stories stories={stories} />
+          <Posts posts={posts} />
+        </ScrollView>
+      </View>
     </ScreenLayout>
   );
 };
+
+const styles = StyleSheet.create({
+  feedScreen: {
+    backgroundColor: theme.colors.white,
+  },
+});
+
 export default Feed;
