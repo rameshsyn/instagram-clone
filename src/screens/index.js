@@ -6,6 +6,7 @@ import Login from './Login';
 import Signup from './Signup';
 import EditProfile from './EditProfile';
 import AddPostModal from './AddPostModal';
+import PostsScreen from './PostsScreen';
 
 export {
   Feed,
@@ -16,4 +17,5 @@ export {
   Signup,
   EditProfile,
   AddPostModal,
+  PostsScreen,
 };

@@ -3,13 +3,16 @@ import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
 import Icon from './Icon';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import ProfileImage from '../assets/images/michael-dam.jpg';
 import {useNavigation} from '@react-navigation/native';
 import theme from '../config/theme';
 import AddPostModal from '../screens/AddPostModal';
+import {useAuth} from '../authContext';
 
 const BottomTab = () => {
   const navigation = useNavigation();
+  const {
+    user: {photoUrl},
+  } = useAuth();
 
   return (
     <View style={styles.bottomTab}>
@@ -35,7 +38,7 @@ const BottomTab = () => {
             params: {user: null},
           })
         }>
-        <Image source={ProfileImage} style={styles.profileImage} />
+        <Image source={{uri: photoUrl}} style={styles.profileImage} />
       </TouchableOpacity>
     </View>
   );

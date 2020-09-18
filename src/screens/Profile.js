@@ -6,6 +6,7 @@ import {
   View,
   Text,
   TouchableWithoutFeedback,
+  TouchableHighlight,
 } from 'react-native';
 import ScreenLayout from '../components/ScreenLayout';
 import Icon from '../components/Icon';
@@ -22,7 +23,14 @@ import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../authContext';
 import theme from '../config/theme';
 import EditProfile from './EditProfile';
-import {readCollectionPostedBy} from '../firebase/auth';
+import {
+  followUserById,
+  readCollectionPostedBy,
+  subscribeCollectionDocChange,
+  unfollowUserById,
+} from '../firebase/auth';
+import FollowingScreen from './Following';
+import FollowersScreen from './Followers';
 
 const Drawer = createDrawerNavigator();
 
@@ -45,7 +53,14 @@ const TopSection = ({username}) => {
   );
 };
 
-const ProfileImageSection = ({photoUrl, postCount, followers, following}) => {
+const ProfileImageSection = ({
+  photoUrl,
+  postCount,
+  followers,
+  viewFollowers,
+  following,
+  viewFollowing,
+}) => {
   return (
     <View style={styles.profileImageSection}>
       <View>
@@ -61,14 +76,19 @@ const ProfileImageSection = ({photoUrl, postCount, followers, following}) => {
           <Text style={styles.infoValue}>{postCount}</Text>
           <Text>Posts</Text>
         </View>
-        <View>
-          <Text style={styles.infoValue}>{followers.length}</Text>
-          <Text>Followers</Text>
-        </View>
-        <View>
-          <Text style={styles.infoValue}>{following.length}</Text>
-          <Text>Following</Text>
-        </View>
+
+        <TouchableHighlight onPress={viewFollowers}>
+          <>
+            <Text style={styles.infoValue}>{followers.length}</Text>
+            <Text>Followers</Text>
+          </>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={viewFollowing}>
+          <>
+            <Text style={styles.infoValue}>{following.length}</Text>
+            <Text>Following</Text>
+          </>
+        </TouchableHighlight>
       </View>
     </View>
   );
@@ -84,11 +104,22 @@ const ProfileDetails = ({fullName, bio, website}) => {
   );
 };
 
-const ProfileAction = ({isOwnProfile}) => {
+const ProfileAction = ({isOwnProfile, viewUserId, isFollowing}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const {user} = useAuth();
 
   const handleModalToggle = () => {
     setModalVisible((visible) => !visible);
+  };
+
+  const handleFollow = async () => {
+    try {
+      isFollowing
+        ? await unfollowUserById(user.uid, viewUserId)
+        : await followUserById(user.uid, viewUserId);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -103,7 +134,12 @@ const ProfileAction = ({isOwnProfile}) => {
         </>
       ) : (
         <View style={styles.profileAction}>
-          <AppButton title="Follow" color="primary" style={{marginRight: 10}} />
+          <AppButton
+            title={isFollowing ? 'Following' : 'Follow'}
+            color={isFollowing ? 'default' : 'primary'}
+            style={{marginRight: 10}}
+            onPress={handleFollow}
+          />
           <AppButton title="Message" />
         </View>
       )}
@@ -112,14 +148,22 @@ const ProfileAction = ({isOwnProfile}) => {
 };
 
 const Gallery = ({posts}) => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.gallery}>
       {posts.map((post, i) => (
-        <Image
+        <TouchableHighlight
           key={i}
-          source={{uri: post.imageUrl}}
-          style={styles.galleryImage}
-        />
+          underlayColor={theme.colors.grey}
+          onPress={() =>
+            navigation.navigate('PostsScreen', {
+              post,
+              posts,
+            })
+          }>
+          <Image source={{uri: post.imageUrl}} style={styles.galleryImage} />
+        </TouchableHighlight>
       ))}
     </View>
   );
@@ -130,6 +174,7 @@ const ProfileScreen = ({route}) => {
   const {isLoggedIn, user: loggedUser} = useAuth();
   const user = viewUser ? viewUser : loggedUser;
   const [posts, setPosts] = useState([]);
+  const navigation = useNavigation();
 
   const {
     username,
@@ -156,7 +201,14 @@ const ProfileScreen = ({route}) => {
     getPostData();
   }, [user]);
 
+  const viewFollowing = () => {
+    navigation.navigate('FollowingScreen', {userId: user.uid});
+  };
+  const viewFollowers = () => {
+    navigation.navigate('FollowersScreen', {userId: user.uid});
+  };
   const isOwnProfile = isLoggedIn && uid === loggedUser.uid;
+  const isFollowing = loggedUser.following.includes(viewUser?.uid);
 
   return (
     <ScreenLayout>
@@ -167,9 +219,15 @@ const ProfileScreen = ({route}) => {
           followers={followers}
           following={following}
           postCount={posts.length}
+          viewFollowing={viewFollowing}
+          viewFollowers={viewFollowers}
         />
         <ProfileDetails fullName={fullName} bio={bio} website={website} />
-        <ProfileAction isOwnProfile={isOwnProfile} />
+        <ProfileAction
+          isOwnProfile={isOwnProfile}
+          viewUserId={uid}
+          isFollowing={isFollowing}
+        />
         <Gallery posts={posts} />
       </ScrollView>
     </ScreenLayout>
@@ -240,6 +298,20 @@ const ProfileDrawerContent = (props) => {
 };
 
 const Profile = ({}) => {
+  const {user, setUser} = useAuth();
+
+  const updateUserData = (userData) => {
+    setUser(userData);
+  };
+  useEffect(() => {
+    const subscriber = subscribeCollectionDocChange(
+      'Users',
+      user.uid,
+      updateUserData,
+    );
+    return subscriber;
+  }, []);
+
   return (
     <Drawer.Navigator
       drawerPosition="right"
@@ -247,6 +319,8 @@ const Profile = ({}) => {
       initialRouteName="ProfileScreen"
       drawerContent={(props) => <ProfileDrawerContent {...props} />}>
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Drawer.Screen name="FollowingScreen" component={FollowingScreen} />
+      <Drawer.Screen name="FollowersScreen" component={FollowersScreen} />
     </Drawer.Navigator>
   );
 };
@@ -349,3 +423,45 @@ const styles = StyleSheet.create({
 });
 
 export default Profile;
+
+// const Home = () => {
+//   const [name, setName] = useState('Ramesh Syangtan');
+//   return (
+//     <Main name={name} setName={setName}>
+//      <Header name={name} setName={setName} />
+//     </Main>
+//   )
+// };
+
+// const Main = ({ name, setName }) => {
+//   return (
+//     <Aside name={name} setName={setName}>
+
+//   </Aside>
+//   )
+// };
+
+// const Aside = ({ name, setName }) => {
+//   return (
+//     <Header name={name} setName={setName}>
+
+//   </Header>
+//   )
+// };
+
+// const Header = ({ name, setName }) => {
+
+//   return <Text onPress={() => {setName('nabrj')}}>{name}</Text>
+// };
+
+// const profileInfo = {
+//   name: 'ramesh',
+//   age: 3333,
+//   gender: 'male'
+// };
+
+// const {  name,  age,  gender } = profileInfo;
+
+// const name = profileInfo.name;
+
+// console.log(name)

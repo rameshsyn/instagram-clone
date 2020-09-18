@@ -12,6 +12,15 @@ export const authStateChange = (onAuthStateChanged) => {
   return unsubscribe;
 };
 
+export const subscribeCollectionDocChange = (collection, document, cb) => {
+  return firestore()
+    .collection(collection)
+    .doc(document)
+    .onSnapshot((documentSnapshot) => {
+      cb(documentSnapshot.data());
+    });
+};
+
 // Create user in firebase auth & firestore
 export const createUser = async (email, password, username) => {
   const authResponse = await auth().createUserWithEmailAndPassword(
@@ -94,3 +103,55 @@ export const fetchUserByAuthUid = (Uid) => {
 export const updateData = (collection, document, data) => {
   return firestore().collection(collection).doc(document).update(data);
 };
+
+export const followUserById = (loggedInUserId, userId) => {
+  const updateLoggedInUser = updateData('Users', loggedInUserId, {
+    following: firestore.FieldValue.arrayUnion(userId),
+  });
+
+  const updateUser = updateData('Users', userId, {
+    followers: firestore.FieldValue.arrayUnion(loggedInUserId),
+  });
+  return Promise.all([updateLoggedInUser, updateUser]);
+};
+
+export const unfollowUserById = (loggedInUserId, userId) => {
+  const updateLoggedInUser = updateData('Users', loggedInUserId, {
+    following: firestore.FieldValue.arrayRemove(userId),
+  });
+
+  const updateUser = updateData('Users', userId, {
+    followers: firestore.FieldValue.arrayRemove(loggedInUserId),
+  });
+  return Promise.all([updateLoggedInUser, updateUser]);
+};
+
+export const getFollowingByUserId = async (userId) => {
+  const response = await firestore().collection('Users').doc(userId).get();
+  const following = response._data.following;
+  const followingUserDetailsReqs = following.map((id) =>
+    firestore().collection('Users').doc(id).get(),
+  );
+  const followingUserDetailsRes = await Promise.all(followingUserDetailsReqs);
+  return followingUserDetailsRes.map((res) => res._data);
+};
+
+export const getFollowersByUserId = async (userId) => {
+  const response = await firestore().collection('Users').doc(userId).get();
+  const followers = response._data.followers;
+  const followersUserDetailsReqs = followers.map((id) =>
+    firestore().collection('Users').doc(id).get(),
+  );
+  const followersUserDetailsRes = await Promise.all(followersUserDetailsReqs);
+  return followersUserDetailsRes.map((res) => res._data);
+};
+
+// export const getFollowersByUserId=async(userId, name)=>{
+//   const response =await firestore().collection('Users').doc(userId).get();
+//   const followers=response._data[name];
+//   const followersUserDetailsReqs=followers.map((id)=>{
+//     firestore().collection('Users').doc(id).get();
+//     const followersUserDetailsRes=await Promise.all(followersUserDetailsReqs);
+//     return followersUserDetailsRes.map((res)=>res._data);
+//   });
+// }

@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     fontWeight: 'bold',
+    color: theme.colors.black,
   },
   primaryText: {
     color: theme.colors.white,

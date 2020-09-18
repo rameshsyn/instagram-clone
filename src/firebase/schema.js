@@ -10,8 +10,18 @@ export const userSchema = {
   gender: '',
   phone: '',
   photoUrl: '',
-  followers: [],
-  following: [],
+  followers: [
+    // {
+    //   userId: '',
+    //   date: new Date()
+    // }
+  ],
+  following: [
+    // {
+    //   userId: '',
+    //   date: new Date()
+    // }
+  ],
 };
 
 export const postSchema = {

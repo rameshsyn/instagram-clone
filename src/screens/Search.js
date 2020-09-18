@@ -1,18 +1,11 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {
-  View,
-  TextInput,
-  Image,
-  StyleSheet,
-  Text,
-  ScrollView,
-  TouchableHighlight,
-} from 'react-native';
+import {View, TextInput, StyleSheet, ScrollView} from 'react-native';
 import Icon from '../components/Icon';
 import Feather from 'react-native-vector-icons/Feather';
 import ScreenLayout from '../components/ScreenLayout';
 import {fetchAllUsers} from '../firebase/auth';
 import theme from '../config/theme';
+import UserList from '../components/User';
 
 // TODO:
 // When a user enters a character in search input
@@ -36,10 +29,6 @@ const Search = ({navigation}) => {
     setSearchText(text);
   };
 
-  const viewProfile = (user) => {
-    navigation.navigate('Profile', {screen: 'ProfileScreen', params: {user}});
-  };
-
   const filteredUsers = useMemo(
     () => users.filter((user) => user.username.includes(searchText)),
     [searchText],
@@ -57,25 +46,7 @@ const Search = ({navigation}) => {
         {/* <Icon name="qr-scan" style={styles.icon} /> */}
       </View>
       <ScrollView>
-        {filteredUsers.map((user) => {
-          const {username, fullName, photoUrl} = user;
-          return (
-            <TouchableHighlight
-              key={username}
-              underlayColor={theme.colors.grey}
-              onPress={() => viewProfile(user)}>
-              <View style={styles.userContainer}>
-                <View style={styles.profilePhotoContainer}>
-                  <Image source={{uri: photoUrl}} style={styles.profilePhoto} />
-                </View>
-                <View style={styles.userNames}>
-                  <Text style={styles.usernameText}>{username}</Text>
-                  <Text style={styles.fullNameText}>{fullName}</Text>
-                </View>
-              </View>
-            </TouchableHighlight>
-          );
-        })}
+        <UserList users={filteredUsers} />
       </ScrollView>
     </ScreenLayout>
   );

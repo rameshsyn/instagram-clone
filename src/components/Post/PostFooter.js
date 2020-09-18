@@ -18,10 +18,10 @@ const PostFooter = ({likes, username, description}) => {
         </View>
       </View>
       <View style={styles.footerBottom}>
-        {likes && <Text style={styles.likes}>{likes} likes</Text>}
+        <Text style={styles.likes}>{likes} likes</Text>
         <Text>
           <Text style={styles.username}>{username}</Text>
-          {description}
+          <Text>{description}</Text>
         </Text>
       </View>
     </View>

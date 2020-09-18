@@ -7,6 +7,7 @@ import {
   Notification,
   Login,
   Signup,
+  PostsScreen,
 } from './src/screens';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -45,27 +46,14 @@ const App = () => {
 
   useEffect(() => {
     const unsubscribe = auth.authStateChange(onAuthStateChanged);
-    if (user) {
-      const subscriber = firestore()
-        .collection('Users')
-        .doc(user.uid)
-        .onSnapshot((documentSnapshot) => {
-          const data = documentSnapshot.data();
-          console.log(`User doc snap Change`, data);
-          setUser(data);
-        });
-      return () => {
-        unsubscribe();
-        subscriber();
-      };
-    }
     return unsubscribe;
   }, []);
 
   if (isLoading) return <Text>Loading...</Text>;
   const isLoggedIn = !!user;
   return (
-    <AuthProvider value={{user, isLoggedIn, ...auth, setUserState, logOutUser}}>
+    <AuthProvider
+      value={{user, isLoggedIn, ...auth, setUser, setUserState, logOutUser}}>
       <StatusBar />
       <NavigationContainer>
         <Stack.Navigator
@@ -78,6 +66,7 @@ const App = () => {
               <Stack.Screen name="Profile" component={Profile} />
               <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="Search" component={Search} />
+              <Stack.Screen name="PostsScreen" component={PostsScreen} />
             </>
           ) : (
             <>
