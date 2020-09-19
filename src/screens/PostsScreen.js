@@ -18,7 +18,7 @@ const PostsScreen = ({route}) => {
       setRemainingPosts(
         posts
           .filter((fetchedPost) => fetchedPost.imageUrl !== post.imageUrl)
-          .map(({imageUrl, caption, location, likes, comments}) => ({
+          .map(({imageUrl, caption, location, likes, comments, ...rest}) => ({
             postImage: imageUrl,
             description: caption,
             location,
@@ -26,6 +26,7 @@ const PostsScreen = ({route}) => {
             comments: comments.length,
             username: userData._data.username,
             profileImage: userData._data.photoUrl,
+            ...rest,
           })),
       );
     };
