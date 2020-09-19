@@ -21,7 +21,7 @@ const PostsScreen = ({route}) => {
           .map(({imageUrl, caption, location, likes, comments}) => ({
             postImage: imageUrl,
             description: caption,
-            place: location,
+            location,
             likes: likes.length,
             comments: comments.length,
             username: userData._data.username,

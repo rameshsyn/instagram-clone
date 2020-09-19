@@ -25,9 +25,9 @@ import theme from '../config/theme';
 import EditProfile from './EditProfile';
 import {
   followUserById,
-  readCollectionPostedBy,
   subscribeCollectionDocChange,
   unfollowUserById,
+  getPostsByUid,
 } from '../firebase/auth';
 import FollowingScreen from './Following';
 import FollowersScreen from './Followers';
@@ -190,9 +190,7 @@ const ProfileScreen = ({route}) => {
   useEffect(() => {
     const getPostData = async () => {
       try {
-        const postData = await readCollectionPostedBy('Posts', uid);
-        const postDocs = postData._docs;
-        const posts = postDocs.map((doc) => doc._data);
+        const posts = await getPostsByUid(uid);
         setPosts(posts);
       } catch (err) {
         console.log(err);

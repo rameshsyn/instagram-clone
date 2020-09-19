@@ -1,15 +1,26 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import Icon from '../Icon';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import theme from '../../config/theme';
 
-const PostFooter = ({likes, username, description}) => {
+const PostFooter = ({
+  username,
+  description,
+  liked,
+  likeCount,
+  handleHeartPress,
+}) => {
   return (
     <View style={styles.postFooter}>
       <View style={styles.icons}>
         <View style={styles.leftIcons}>
-          <Icon name="heart-outline" />
+          <Icon
+            name={liked ? 'heart' : 'heart-outline'}
+            color={liked ? theme.colors.heart : theme.colors.charcoal}
+            onPress={handleHeartPress}
+          />
           <Icon name="comment-o" component={FontAwesome} />
           <Icon name="send" component={FeatherIcon} />
         </View>
@@ -18,7 +29,7 @@ const PostFooter = ({likes, username, description}) => {
         </View>
       </View>
       <View style={styles.footerBottom}>
-        <Text style={styles.likes}>{likes} likes</Text>
+        <Text style={styles.likes}>{likeCount} likes</Text>
         <Text>
           <Text style={styles.username}>{username}</Text>
           <Text>{description}</Text>
@@ -49,6 +60,9 @@ const styles = StyleSheet.create({
   },
   footerBottom: {
     paddingLeft: 15,
+  },
+  outline: {
+    backgroundColor: 'red',
   },
 });
 export default PostFooter;

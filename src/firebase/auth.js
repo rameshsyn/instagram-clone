@@ -35,6 +35,7 @@ export const createUser = async (email, password, username) => {
       email: authResponse.user.email,
       username,
       uid: authResponse.user.uid,
+      createdAt: Date.now(),
     });
   return authResponse;
 };
@@ -62,26 +63,13 @@ export const createPost = async (imageFilePath, caption, uid) => {
       imageUrl: url,
       caption,
       postedBy: uid,
+      createdAt: Date.now(),
     });
-};
-
-// export const getImageFromStorage = async (uid) => {
-//   const STORAGE_PATH = `/images/${uid}/`;
-
-//   const imgReference = storage().ref(STORAGE_PATH);
-
-// };
-
-export const readCollectionPostedBy = async (collection, uid) => {
-  return await firestore()
-    .collection(collection)
-    .where('postedBy', '==', uid)
-    .get();
 };
 
 export const readDocument = async (collection, document) => {
   const data = await firestore().collection(collection).doc(document).get();
-  return data;
+  return data._data;
 };
 
 export const loginUser = (email, password) => {
@@ -146,12 +134,35 @@ export const getFollowersByUserId = async (userId) => {
   return followersUserDetailsRes.map((res) => res._data);
 };
 
-// export const getFollowersByUserId=async(userId, name)=>{
-//   const response =await firestore().collection('Users').doc(userId).get();
-//   const followers=response._data[name];
-//   const followersUserDetailsReqs=followers.map((id)=>{
-//     firestore().collection('Users').doc(id).get();
-//     const followersUserDetailsRes=await Promise.all(followersUserDetailsReqs);
-//     return followersUserDetailsRes.map((res)=>res._data);
-//   });
-// }
+// Get posts by uid
+export const getPostsByUid = async (uid) => {
+  const userData = await readDocument('Users', uid);
+  const postDocs = (
+    await firestore().collection('Posts').where('postedBy', '==', uid).get()
+  )._docs;
+
+  return postDocs.map((postDoc) => ({
+    ...postDoc._data,
+    postedBy: userData,
+  }));
+};
+
+// Get posts posted by following users for logged in user.
+export const getFeedPosts = async (userId) => {
+  const followingIds = (await readDocument('Users', userId)).following;
+  return (
+    await Promise.all(followingIds.map((fid) => getPostsByUid(fid)))
+  ).flat();
+};
+
+export const likeUnlikePost = async (liked, postId, userId) => {
+  if (liked) {
+    return await updateData('Posts', postId, {
+      likes: firestore.FieldValue.arrayUnion(userId),
+    });
+  } else {
+    return await updateData('Posts', postId, {
+      likes: firestore.FieldValue.arrayRemove(userId),
+    });
+  }
+};

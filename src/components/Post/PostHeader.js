@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Image, Text, StyleSheet} from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from '../Icon';
 
-const PostHeader = ({username, place, profileImage}) => {
+const PostHeader = ({username, location, profileImage}) => {
   return (
     <View style={styles.postHeader}>
       <View style={styles.detail}>
@@ -15,7 +15,7 @@ const PostHeader = ({username, place, profileImage}) => {
         />
         <View>
           <Text style={styles.username}>{username}</Text>
-          <Text>{place}</Text>
+          <Text>{location}</Text>
         </View>
       </View>
       <View>

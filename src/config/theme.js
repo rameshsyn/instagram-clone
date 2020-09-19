@@ -7,6 +7,7 @@ export default {
     grey: '#bbb',
     btnColor: '#0095ff',
     danger: 'crimson',
+    heart: '#ed4956',
   },
   sizes: {
     icon: 30,

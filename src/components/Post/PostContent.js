@@ -1,16 +1,18 @@
-import React from 'react';
-import {View, Image, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {View, Image, StyleSheet, TouchableHighlight} from 'react-native';
 
-const PostContent = ({postImage}) => {
+const PostContent = ({postImage, handleImagePress}) => {
   return (
-    <View>
-      <Image
-        source={{
-          uri: postImage,
-        }}
-        style={styles.image}
-      />
-    </View>
+    <TouchableHighlight onPress={handleImagePress}>
+      <View>
+        <Image
+          source={{
+            uri: postImage,
+          }}
+          style={styles.image}
+        />
+      </View>
+    </TouchableHighlight>
   );
 };
 const styles = StyleSheet.create({

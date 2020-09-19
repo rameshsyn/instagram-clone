@@ -22,6 +22,7 @@ export const userSchema = {
     //   date: new Date()
     // }
   ],
+  createdAt: Date.now(),
 };
 
 export const postSchema = {
@@ -37,6 +38,7 @@ export const postSchema = {
   postedBy: null, // UserId,
   tagged: [],
   location: '',
+  createdAt: Date.now(),
 };
 
 export const storySchema = {};
