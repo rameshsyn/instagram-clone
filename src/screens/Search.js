@@ -30,7 +30,10 @@ const Search = ({navigation}) => {
   };
 
   const filteredUsers = useMemo(
-    () => users.filter((user) => user.username.includes(searchText)),
+    () =>
+      users.filter((user) =>
+        user.username.toLowerCase().includes((searchText || '').toLowerCase()),
+      ),
     [searchText],
   );
   return (

@@ -11,7 +11,7 @@ import CameraRoll from '@react-native-community/cameraroll';
 
 // TODO: Fetch next photos when scroll ends.
 
-const Gallery = ({setImageNewPost}) => {
+const Gallery = ({setImageNewPost, onImageSelect}) => {
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -30,9 +30,12 @@ const Gallery = ({setImageNewPost}) => {
 
   const handleImageSelect = (image, index) => {
     setSelectedImage(image);
-    setImageNewPost(image);
     setSelectedIndex(index);
   };
+
+  useEffect(() => {
+    onImageSelect(selectedImage);
+  }, [selectedImage]);
 
   useEffect(() => {
     let isUnmounted = false;
@@ -48,6 +51,7 @@ const Gallery = ({setImageNewPost}) => {
           if (!isUnmounted) {
             setImages(images);
             setSelectedImage(images[0]);
+            onImageSelect(images[0]);
             setSelectedIndex(0);
           }
         }

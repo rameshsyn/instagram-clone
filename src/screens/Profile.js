@@ -14,11 +14,8 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import AppButton from '../components/AppButton';
 import {ScrollView} from 'react-native-gesture-handler';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from '@react-navigation/drawer';
+import {createStackNavigator} from '@react-navigation/stack';
+import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../authContext';
 import theme from '../config/theme';
@@ -31,8 +28,10 @@ import {
 } from '../firebase/auth';
 import FollowingScreen from './Following';
 import FollowersScreen from './Followers';
+import PostsScreen from './PostsScreen';
 
 const Drawer = createDrawerNavigator();
+const ProfileStack = createStackNavigator();
 
 const TopSection = ({username}) => {
   const navigation = useNavigation();
@@ -60,6 +59,7 @@ const ProfileImageSection = ({
   viewFollowers,
   following,
   viewFollowing,
+  viewPosts,
 }) => {
   return (
     <View style={styles.profileImageSection}>
@@ -72,11 +72,12 @@ const ProfileImageSection = ({
         />
       </View>
       <View style={styles.profileStats}>
-        <View>
-          <Text style={styles.infoValue}>{postCount}</Text>
-          <Text>Posts</Text>
-        </View>
-
+        <TouchableHighlight onPress={viewPosts}>
+          <>
+            <Text style={styles.infoValue}>{postCount}</Text>
+            <Text>Posts</Text>
+          </>
+        </TouchableHighlight>
         <TouchableHighlight onPress={viewFollowers}>
           <>
             <Text style={styles.infoValue}>{followers.length}</Text>
@@ -94,7 +95,7 @@ const ProfileImageSection = ({
   );
 };
 
-const ProfileDetails = ({fullName, bio, website}) => {
+const ProfileInfoDetails = ({fullName, bio, website}) => {
   return (
     <View style={styles.profileDetails}>
       <Text style={styles.fullName}>{fullName}</Text>
@@ -147,19 +148,19 @@ const ProfileAction = ({isOwnProfile, viewUserId, isFollowing}) => {
   );
 };
 
-const Gallery = ({posts}) => {
+const UserPostsGrid = ({posts, userId}) => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.gallery}>
       {posts.map((post, i) => (
         <TouchableHighlight
-          key={i}
+          key={post.pid}
           underlayColor={theme.colors.grey}
           onPress={() =>
             navigation.navigate('PostsScreen', {
-              post,
-              posts,
+              postId: post.pid,
+              userId,
             })
           }>
           <Image source={{uri: post.imageUrl}} style={styles.galleryImage} />
@@ -169,7 +170,7 @@ const Gallery = ({posts}) => {
   );
 };
 
-const ProfileScreen = ({route}) => {
+const ProfileDetails = ({route}) => {
   const viewUser = route.params?.user;
   const {isLoggedIn, user: loggedUser} = useAuth();
   const user = viewUser ? viewUser : loggedUser;
@@ -205,30 +206,35 @@ const ProfileScreen = ({route}) => {
   const viewFollowers = () => {
     navigation.navigate('FollowersScreen', {userId: user.uid});
   };
+
+  const viewPosts = () => {
+    navigation.navigate('PostsScreen', {
+      userId: user.uid,
+    });
+  };
   const isOwnProfile = isLoggedIn && uid === loggedUser.uid;
   const isFollowing = loggedUser.following.includes(viewUser?.uid);
 
   return (
-    <ScreenLayout>
-      <ScrollView>
-        <TopSection username={username} />
-        <ProfileImageSection
-          photoUrl={photoUrl}
-          followers={followers}
-          following={following}
-          postCount={posts.length}
-          viewFollowing={viewFollowing}
-          viewFollowers={viewFollowers}
-        />
-        <ProfileDetails fullName={fullName} bio={bio} website={website} />
-        <ProfileAction
-          isOwnProfile={isOwnProfile}
-          viewUserId={uid}
-          isFollowing={isFollowing}
-        />
-        <Gallery posts={posts} />
-      </ScrollView>
-    </ScreenLayout>
+    <ScrollView>
+      <TopSection username={username} />
+      <ProfileImageSection
+        photoUrl={photoUrl}
+        followers={followers}
+        following={following}
+        postCount={posts.length}
+        viewFollowing={viewFollowing}
+        viewFollowers={viewFollowers}
+        viewPosts={viewPosts}
+      />
+      <ProfileInfoDetails fullName={fullName} bio={bio} website={website} />
+      <ProfileAction
+        isOwnProfile={isOwnProfile}
+        viewUserId={uid}
+        isFollowing={isFollowing}
+      />
+      <UserPostsGrid posts={posts} userId={uid} />
+    </ScrollView>
   );
 };
 
@@ -295,6 +301,16 @@ const ProfileDrawerContent = (props) => {
   );
 };
 
+const ProfileDrawer = () => (
+  <Drawer.Navigator
+    drawerPosition="right"
+    drawerType="slide"
+    initialRouteName="ProfileDetails"
+    drawerContent={(props) => <ProfileDrawerContent {...props} />}>
+    <Drawer.Screen name="ProfileDetails" component={ProfileDetails} />
+  </Drawer.Navigator>
+);
+
 const Profile = ({}) => {
   const {user, setUser} = useAuth();
 
@@ -311,15 +327,16 @@ const Profile = ({}) => {
   }, []);
 
   return (
-    <Drawer.Navigator
-      drawerPosition="right"
-      drawerType="slide"
-      initialRouteName="ProfileScreen"
-      drawerContent={(props) => <ProfileDrawerContent {...props} />}>
-      <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
-      <Drawer.Screen name="FollowingScreen" component={FollowingScreen} />
-      <Drawer.Screen name="FollowersScreen" component={FollowersScreen} />
-    </Drawer.Navigator>
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen
+        name="ProfileDrawer"
+        options={{headerShown: false}}
+        component={ProfileDrawer}
+      />
+      <ProfileStack.Screen name="PostsScreen" component={PostsScreen} />
+      <ProfileStack.Screen name="FollowingScreen" component={FollowingScreen} />
+      <ProfileStack.Screen name="FollowersScreen" component={FollowersScreen} />
+    </ProfileStack.Navigator>
   );
 };
 
@@ -409,57 +426,15 @@ const styles = StyleSheet.create({
   gallery: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     flexWrap: 'wrap',
     paddingVertical: 20,
   },
   galleryImage: {
     height: 125,
     width: 125,
-    margin: 2,
+    marginLeft: 5,
+    marginBottom: 5,
   },
 });
 
 export default Profile;
-
-// const Home = () => {
-//   const [name, setName] = useState('Ramesh Syangtan');
-//   return (
-//     <Main name={name} setName={setName}>
-//      <Header name={name} setName={setName} />
-//     </Main>
-//   )
-// };
-
-// const Main = ({ name, setName }) => {
-//   return (
-//     <Aside name={name} setName={setName}>
-
-//   </Aside>
-//   )
-// };
-
-// const Aside = ({ name, setName }) => {
-//   return (
-//     <Header name={name} setName={setName}>
-
-//   </Header>
-//   )
-// };
-
-// const Header = ({ name, setName }) => {
-
-//   return <Text onPress={() => {setName('nabrj')}}>{name}</Text>
-// };
-
-// const profileInfo = {
-//   name: 'ramesh',
-//   age: 3333,
-//   gender: 'male'
-// };
-
-// const {  name,  age,  gender } = profileInfo;
-
-// const name = profileInfo.name;
-
-// console.log(name)

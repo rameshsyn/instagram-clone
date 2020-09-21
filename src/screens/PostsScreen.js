@@ -1,54 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import {ScrollView} from 'react-native';
 import Posts from '../components/Post';
-import Post from '../components/Post/Post';
-import {fetchUserByAuthUid} from '../firebase/auth';
-import BottomTab from '../components/BottomTab';
+import {getPostsByUid} from '../firebase/auth';
 
 const PostsScreen = ({route}) => {
-  const [user, setUser] = useState([]);
-  const [remainingPosts, setRemainingPosts] = useState([]);
-  const {post, posts} = route.params;
-  const {imageUrl, caption, postedBy, location, likes, comments} = post;
-
+  const [posts, setPosts] = useState([]);
+  const {userId} = route.params;
   useEffect(() => {
-    const fetchUserData = async () => {
-      const userData = await fetchUserByAuthUid(postedBy);
-      setUser(userData._data);
-      setRemainingPosts(
-        posts
-          .filter((fetchedPost) => fetchedPost.imageUrl !== post.imageUrl)
-          .map(({imageUrl, caption, location, likes, comments, ...rest}) => ({
-            postImage: imageUrl,
-            description: caption,
-            location,
-            likes: likes.length,
-            comments: comments.length,
-            username: userData._data.username,
-            profileImage: userData._data.photoUrl,
-            ...rest,
-          })),
-      );
+    const fetchPosts = async () => {
+      const posts = await getPostsByUid(userId);
+      setPosts(posts);
     };
-    fetchUserData();
+    fetchPosts();
   }, []);
 
   return (
-    <>
-      <ScrollView>
-        <Post
-          postImage={imageUrl}
-          description={caption}
-          place={location}
-          likes={likes.length}
-          comments={comments.length}
-          username={user?.username}
-          profileImage={user?.photoUrl}
-        />
-        <Posts posts={remainingPosts} />
-      </ScrollView>
-      <BottomTab />
-    </>
+    <ScrollView>
+      <Posts posts={posts} />
+    </ScrollView>
   );
 };
 

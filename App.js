@@ -7,15 +7,15 @@ import {
   Notification,
   Login,
   Signup,
-  PostsScreen,
+  AddPost,
 } from './src/screens';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {AuthProvider} from './src/authContext';
 import * as auth from './src/firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+import BottomTab from './src/components/BottomTab';
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -56,25 +56,34 @@ const App = () => {
       value={{user, isLoggedIn, ...auth, setUser, setUserState, logOutUser}}>
       <StatusBar />
       <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}>
+        <Tab.Navigator tabBar={(props) => <BottomTab {...props} />}>
           {isLoggedIn ? (
             <>
-              <Stack.Screen name="Feed" component={Feed} />
-              <Stack.Screen name="Profile" component={Profile} />
-              <Stack.Screen name="Notification" component={Notification} />
-              <Stack.Screen name="Search" component={Search} />
-              <Stack.Screen name="PostsScreen" component={PostsScreen} />
+              <Tab.Screen name="Feed" component={Feed} />
+              <Tab.Screen name="Search" component={Search} />
+              <Tab.Screen
+                name="AddPost"
+                component={AddPost}
+                options={{tabBarVisible: false}}
+              />
+              <Tab.Screen name="Notification" component={Notification} />
+              <Tab.Screen name="Profile" component={Profile} />
             </>
           ) : (
             <>
-              <Stack.Screen name="Login" component={Login} />
-              <Stack.Screen name="Signup" component={Signup} />
+              <Tab.Screen
+                name="Login"
+                component={Login}
+                options={{tabBarVisible: false}}
+              />
+              <Tab.Screen
+                name="Signup"
+                component={Signup}
+                options={{tabBarVisible: false}}
+              />
             </>
           )}
-        </Stack.Navigator>
+        </Tab.Navigator>
       </NavigationContainer>
     </AuthProvider>
   );

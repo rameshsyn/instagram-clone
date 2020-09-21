@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
-import BottomTab from '../components/BottomTab';
 import {getFollowingByUserId} from '../firebase/auth';
 import UserList from '../components/User';
 import Loading from '../components/Loading';
@@ -30,7 +29,6 @@ const Following = ({route}) => {
       <ScrollView style={styles.followingContainer}>
         {isLoading ? <Loading /> : <UserList users={following} />}
       </ScrollView>
-      <BottomTab />
     </>
   );
 };

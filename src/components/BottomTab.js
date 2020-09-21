@@ -1,45 +1,89 @@
 import React from 'react';
-import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import {StyleSheet, Image, TouchableOpacity, View} from 'react-native';
 import Icon from './Icon';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import {useNavigation} from '@react-navigation/native';
 import theme from '../config/theme';
-import AddPostModal from '../screens/AddPostModal';
 import {useAuth} from '../authContext';
 
-const BottomTab = () => {
-  const navigation = useNavigation();
+const BottomTab = ({state, descriptors, navigation}) => {
+  const focusedOptions = descriptors[state.routes[state.index].key].options;
   const {
     user: {photoUrl},
   } = useAuth();
 
+  if (focusedOptions.tabBarVisible === false) {
+    return null;
+  }
+
   return (
     <View style={styles.bottomTab}>
-      <Icon name="home-outline" onPress={() => navigation.navigate('Feed')} />
-      <Icon
-        component={MaterialIcon}
-        name="search"
-        onPress={() => navigation.navigate('Search')}
-      />
-      <AddPostModal
-        triggerComponent={<Icon name="plus-square" component={FeatherIcon} />}
-      />
+      {state.routes.map((route, index) => {
+        const {options} = descriptors[route.key];
+        const isFocused = state.index === index;
 
-      <Icon
-        name="heart-outline"
-        onPress={() => navigation.navigate('Notification')}
-      />
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
 
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('Profile', {
-            screen: 'ProfileScreen',
-            params: {user: null},
-          })
-        }>
-        <Image source={{uri: photoUrl}} style={styles.profileImage} />
-      </TouchableOpacity>
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        const onLongPress = () => {
+          navigation.emit({
+            type: 'tabLongPress',
+            target: route.key,
+          });
+        };
+
+        let icon = null;
+
+        if (route.name === 'Feed') {
+          icon = <Icon name={isFocused ? 'home' : 'home-outline'} />;
+        } else if (route.name === 'Search') {
+          icon = (
+            <Icon
+              component={Ionicons}
+              name={isFocused ? 'search' : 'search-outline'}
+            />
+          );
+        } else if (route.name === 'AddPost') {
+          icon = <Icon name="plus-square" component={FeatherIcon} />;
+        } else if (route.name === 'Notification') {
+          icon = <Icon name={isFocused ? 'heart' : 'heart-outline'} />;
+        } else if (route.name === 'Profile') {
+          icon = isFocused ? (
+            <View style={styles.profileImageContainer}>
+              <Image
+                source={{uri: photoUrl}}
+                style={[styles.profileImage, styles.profileImageFocused]}
+              />
+            </View>
+          ) : (
+            <Image source={{uri: photoUrl}} style={styles.profileImage} />
+          );
+        } else {
+          icon = null;
+        }
+
+        return (
+          <TouchableOpacity
+            key={index}
+            accessibilityRole="button"
+            accessibilityStates={isFocused ? ['selected'] : []}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+            testID={options.tabBarTestID}
+            onPress={onPress}
+            onLongPress={onLongPress}>
+            {icon}
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
@@ -63,6 +107,17 @@ const styles = StyleSheet.create({
     height: theme.sizes.icon,
     width: theme.sizes.icon,
     borderRadius: 15,
+  },
+  profileImageContainer: {
+    padding: 2,
+    borderColor: theme.colors.charcoal,
+    borderWidth: 1,
+    borderRadius: 18,
+  },
+  profileImageFocused: {
+    borderWidth: 2,
+    height: theme.sizes.icon - 6,
+    width: theme.sizes.icon - 6,
   },
 });
 

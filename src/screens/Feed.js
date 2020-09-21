@@ -53,27 +53,7 @@ const Feed = () => {
   const fetchFeedPosts = async () => {
     try {
       const posts = await getFeedPosts(user.uid);
-      const _posts = posts.map(
-        ({
-          imageUrl,
-          caption,
-          location,
-          likes,
-          comments,
-          postedBy,
-          ...rest
-        }) => ({
-          postImage: imageUrl,
-          description: caption,
-          location,
-          likes: likes,
-          comments: comments,
-          username: postedBy.username,
-          profileImage: postedBy.photoUrl,
-          ...rest,
-        }),
-      );
-      setPosts(_posts);
+      setPosts(posts);
     } catch (err) {
       console.error(err);
     }

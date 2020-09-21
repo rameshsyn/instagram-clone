@@ -15,7 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {createPost} from '../firebase/auth';
 import {useAuth} from '../authContext';
 
-const TopBar = ({imageFilePath, caption, onClose}) => {
+const TopBar = ({imageFilePath, caption, onSuccess}) => {
   const navigation = useNavigation();
   const {user} = useAuth();
 
@@ -24,7 +24,7 @@ const TopBar = ({imageFilePath, caption, onClose}) => {
   };
 
   const handleShare = async (imageFilePath, caption) => {
-    onClose();
+    onSuccess();
     await createPost(imageFilePath, caption, user.uid);
     console.log('Posted');
   };
@@ -50,11 +50,17 @@ const TopBar = ({imageFilePath, caption, onClose}) => {
   );
 };
 
-const NewPostShare = ({imageFilePath, onClose}) => {
+const NewPostShare = ({route, navigation}) => {
+  const imageFilePath = route.params?.imageFilePath;
+
   const [caption, setCaption] = useState('');
 
   const handleCaptionChange = (value) => {
     setCaption(value);
+  };
+
+  const onSuccess = () => {
+    navigation.navigate('Feed');
   };
 
   return (
@@ -62,7 +68,7 @@ const NewPostShare = ({imageFilePath, onClose}) => {
       <TopBar
         imageFilePath={imageFilePath}
         caption={caption}
-        onClose={onClose}
+        onSuccess={onSuccess}
       />
       <View style={styles.captionContainer}>
         {/* Put selected image here */}
@@ -107,6 +113,7 @@ const styles = StyleSheet.create({
   },
   textnew: {
     marginLeft: 7,
+    fontWeight: 'bold',
   },
   share: {
     fontWeight: 'bold',

@@ -27,11 +27,16 @@ const Video = () => {
 
 const MediaPicker = ({onNextPress, onClose, setImageNewPost}) => {
   const [activeTab, setActiveTab] = useState(Tab.GALLERY);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleActiveTabChange = (tab) => {
     setActiveTab(tab);
   };
   const capitalize = (str) => str && str.charAt(0).toUpperCase() + str.slice(1);
+
+  const handleNext = () => {
+    onNextPress(selectedImage);
+  };
 
   return (
     <>
@@ -42,15 +47,18 @@ const MediaPicker = ({onNextPress, onClose, setImageNewPost}) => {
           </TouchableHighlight>
           <Text style={styles.modalTopLabelText}>{capitalize(activeTab)}</Text>
         </View>
-        <TouchableHighlight onPress={onNextPress}>
+        <TouchableHighlight onPress={handleNext}>
           <Text style={styles.modalTopNext}>Next</Text>
         </TouchableHighlight>
       </View>
       <View style={styles.featureContainer}>
         {activeTab === Tab.GALLERY && (
-          <Gallery setImageNewPost={setImageNewPost} />
+          <Gallery
+            setImageNewPost={setImageNewPost}
+            onImageSelect={setSelectedImage}
+          />
         )}
-        {activeTab === Tab.PHOTO && <Photo setImageNewPost={setImageNewPost} />}
+        {activeTab === Tab.PHOTO && <Photo onImageSelect={setSelectedImage} />}
         {activeTab === Tab.VIDEO && <Video />}
       </View>
       <View style={styles.modalBottom}>
@@ -126,13 +134,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTopLabelText: {
+    paddingLeft: 8,
     fontWeight: 'bold',
     fontSize: 18,
   },
   modalTopNext: {
     fontWeight: 'bold',
     fontSize: 18,
-    color: 'skyblue',
+    color: theme.colors.btnColor,
   },
   featureContainer: {
     // marginTop: 200,

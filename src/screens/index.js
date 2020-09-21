@@ -5,7 +5,7 @@ import Notification from './Notification';
 import Login from './Login';
 import Signup from './Signup';
 import EditProfile from './EditProfile';
-import AddPostModal from './AddPostModal';
+import AddPost from './AddPost';
 import PostsScreen from './PostsScreen';
 
 export {
@@ -16,6 +16,6 @@ export {
   Login,
   Signup,
   EditProfile,
-  AddPostModal,
+  AddPost,
   PostsScreen,
 };

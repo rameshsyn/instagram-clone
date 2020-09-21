@@ -3,7 +3,7 @@ import {StyleSheet, View, Text, Image} from 'react-native';
 import AppButton from '../AppButton';
 import {RNCamera} from 'react-native-camera';
 
-const Camera = ({setImageNewPost}) => {
+const Camera = ({onImageSelect}) => {
   const camera = useRef();
   const [image, setImage] = useState(null);
 
@@ -12,7 +12,7 @@ const Camera = ({setImageNewPost}) => {
       const options = {quality: 0.5, base64: true};
       const data = await camera.current.takePictureAsync(options);
       setImage(data.uri);
-      setImageNewPost(data.uri);
+      onImageSelect(data.uri);
     }
   };
 
