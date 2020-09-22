@@ -56,6 +56,8 @@ export const createPost = async (imageFilePath, caption, uid) => {
   const url = await storage().ref(STORAGE_PATH).getDownloadURL();
 
   // save download url and other post info to firestore.
+  const postDocRef = firestore().collection('Posts').doc();
+  const pid = postDocRef.id;
   await firestore()
     .collection('Posts')
     .add({
@@ -64,6 +66,7 @@ export const createPost = async (imageFilePath, caption, uid) => {
       caption,
       postedBy: uid,
       createdAt: Date.now(),
+      pid,
     });
 };
 
