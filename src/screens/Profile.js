@@ -175,6 +175,7 @@ const ProfileDetails = ({route}) => {
   const {isLoggedIn, user: loggedUser} = useAuth();
   const user = viewUser ? viewUser : loggedUser;
   const [posts, setPosts] = useState([]);
+  console.log('Viewuser 🖤🖤', viewUser, 'User 💘💘💘', user);
   const navigation = useNavigation();
 
   const {
@@ -311,7 +312,9 @@ const ProfileDrawer = () => (
   </Drawer.Navigator>
 );
 
-const Profile = ({}) => {
+const Profile = ({route}) => {
+  const viewUser = route.params.params.user;
+  // console.log('Viewuser from profile', route.params.user);
   const {user, setUser} = useAuth();
 
   const updateUserData = (userData) => {
@@ -320,11 +323,11 @@ const Profile = ({}) => {
   useEffect(() => {
     const subscriber = subscribeCollectionDocChange(
       'Users',
-      user.uid,
+      viewUser.uid,
       updateUserData,
     );
     return subscriber;
-  }, []);
+  }, [viewUser]);
 
   return (
     <ProfileStack.Navigator>
