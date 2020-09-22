@@ -175,6 +175,7 @@ const ProfileDetails = ({route}) => {
   const {isLoggedIn, user: loggedUser} = useAuth();
   const user = viewUser ? viewUser : loggedUser;
   const [posts, setPosts] = useState([]);
+  console.log(user);
   const navigation = useNavigation();
 
   const {
@@ -201,10 +202,10 @@ const ProfileDetails = ({route}) => {
   }, [user]);
 
   const viewFollowing = () => {
-    navigation.navigate('FollowingScreen', {userId: user.uid});
+    navigation.navigate('FollowingScreen', {userId: user.uid });
   };
   const viewFollowers = () => {
-    navigation.navigate('FollowersScreen', {userId: user.uid});
+    navigation.navigate('FollowersScreen', {userId: user.uid });
   };
 
   const viewPosts = () => {
@@ -333,9 +334,9 @@ const Profile = ({}) => {
         options={{headerShown: false}}
         component={ProfileDrawer}
       />
-      <ProfileStack.Screen name="PostsScreen" component={PostsScreen} />
-      <ProfileStack.Screen name="FollowingScreen" component={FollowingScreen} />
-      <ProfileStack.Screen name="FollowersScreen" component={FollowersScreen} />
+      <ProfileStack.Screen name="PostsScreen" options={{title:'Posts'}} component={PostsScreen} />
+      <ProfileStack.Screen name="FollowingScreen" options={{title:'Following'}}  component={FollowingScreen} />
+      <ProfileStack.Screen name="FollowersScreen" options={{title:'Followers'}}  component={FollowersScreen} />
     </ProfileStack.Navigator>
   );
 };
