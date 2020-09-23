@@ -6,11 +6,7 @@ import Login from './Login';
 import Signup from './Signup';
 import AddPost from './AddPost';
 import PostsScreen from './PostsScreen';
-<<<<<<< Updated upstream
 import Likes from './Likes';
-=======
-import EditProfile from './EditProfile';
->>>>>>> Stashed changes
 
 export {
   Feed,
@@ -21,9 +17,5 @@ export {
   Signup,
   AddPost,
   PostsScreen,
-<<<<<<< Updated upstream
   Likes,
-=======
-  EditProfile,
->>>>>>> Stashed changes
 };

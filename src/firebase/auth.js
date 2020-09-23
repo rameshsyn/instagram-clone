@@ -2,6 +2,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {userSchema, postSchema} from './schema';
 import storage from '@react-native-firebase/storage';
+import {saveToAlgolia} from './algolia';
 
 // Listen for authentication state change
 export const authStateChange = (onAuthStateChanged) => {
@@ -27,16 +28,19 @@ export const createUser = async (email, password, username) => {
     email,
     password,
   );
-  await firestore()
-    .collection('Users')
-    .doc(authResponse.user.uid)
-    .set({
-      ...userSchema,
-      email: authResponse.user.email,
-      username,
-      uid: authResponse.user.uid,
-      createdAt: Date.now(),
-    });
+
+  const user = {
+    ...userSchema,
+    email: authResponse.user.email,
+    username,
+    uid: authResponse.user.uid,
+    createdAt: Date.now(),
+  };
+
+  await firestore().collection('Users').doc(authResponse.user.uid).set(user);
+
+  saveToAlgolia(user, 'uid');
+
   return authResponse;
 };
 
@@ -92,14 +96,6 @@ export const fetchUserByAuthUid = (Uid) => {
 };
 
 export const updateData = async (collection, document, data) => {
-  if (data.photoUrl) {
-    const randomFileName = Math.random().toString(36).slice(-9);
-    const STORAGE_PATH = `/images/${data.username}/${randomFileName}`;
-    const reference = storage().ref(STORAGE_PATH);
-    await reference.putFile(data.photoUrl);
-    const url = await storage().ref(STORAGE_PATH).getDownloadURL();
-    data.photoUrl = url;
-  }
   return firestore().collection(collection).doc(document).update(data);
 };
 
@@ -176,4 +172,20 @@ export const likeUnlikePost = async (liked, postId, userId) => {
       likes: firestore.FieldValue.arrayRemove(userId),
     });
   }
+};
+
+export const updateUser = async (data, userAllData) => {
+  if (data.photoUrl) {
+    const randomFileName = Math.random().toString(36).slice(-9);
+    const STORAGE_PATH = `/images/${data.username}/${randomFileName}`;
+    const reference = storage().ref(STORAGE_PATH);
+    await reference.putFile(data.photoUrl);
+    const url = await storage().ref(STORAGE_PATH).getDownloadURL();
+    data.photoUrl = url;
+  }
+
+  // Update algolia
+  saveToAlgolia({...userAllData, ...data}, 'uid');
+
+  return updateData('Users', userAllData.uid, data);
 };

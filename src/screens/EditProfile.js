@@ -16,6 +16,7 @@ import AppFormField from '../components/AppFormField';
 import {useAuth} from '../authContext';
 import {Picker} from '@react-native-community/picker';
 import {useNavigation} from '@react-navigation/native';
+import {updateUser} from '../firebase/auth';
 
 const EditProfile = ({route}) => {
   const navigation = useNavigation();
@@ -23,7 +24,7 @@ const EditProfile = ({route}) => {
 
   const [personGender, setPersonGender] = useState('');
   const [profilePicUrl, setProfilePicUrl] = useState('');
-  const {user, updateData} = useAuth();
+  const {user} = useAuth();
   const {
     uid,
     bio,
@@ -52,7 +53,7 @@ const EditProfile = ({route}) => {
     if (profilePicUrl !== '') tempData.photoUrl = profilePicUrl;
 
     try {
-      await updateData('Users', uid, tempData);
+      await updateUser(tempData, user);
       navigation.goBack();
     } catch (err) {
       console.error(err);

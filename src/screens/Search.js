@@ -1,41 +1,38 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, TextInput, StyleSheet, ScrollView} from 'react-native';
 import Icon from '../components/Icon';
 import Feather from 'react-native-vector-icons/Feather';
 import ScreenLayout from '../components/ScreenLayout';
-import {fetchAllUsers} from '../firebase/auth';
 import theme from '../config/theme';
 import UserList from '../components/User';
+import {searchAlgolia} from '../firebase/algolia';
 
-// TODO:
-// When a user enters a character in search input
-// query user with name or username that contains the entered character
-// and display returned users
-
-const Search = ({navigation}) => {
+const Search = () => {
   const [searchText, setSearchText] = useState(null);
   const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const fetchedUsers = await fetchAllUsers();
-      const fetchedUsersData = fetchedUsers.docs.map((doc) => doc._data);
-      setUsers(fetchedUsersData);
-    };
-    fetchUsers();
-  }, []);
 
   const handleChange = (text) => {
     setSearchText(text);
   };
 
-  const filteredUsers = useMemo(
-    () =>
-      users.filter((user) =>
-        user.username.toLowerCase().includes((searchText || '').toLowerCase()),
-      ),
-    [searchText],
-  );
+  const search = async (text) => {
+    const _text = (text || '').trim();
+    if (!_text) {
+      setUsers([]);
+      return;
+    }
+    try {
+      const res = await searchAlgolia(_text);
+      setUsers(res.hits);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    search(searchText);
+  }, [searchText]);
+
   return (
     <ScreenLayout>
       <View style={styles.searchBar}>
@@ -49,7 +46,7 @@ const Search = ({navigation}) => {
         {/* <Icon name="qr-scan" style={styles.icon} /> */}
       </View>
       <ScrollView>
-        <UserList users={filteredUsers} />
+        <UserList users={users} />
       </ScrollView>
     </ScreenLayout>
   );

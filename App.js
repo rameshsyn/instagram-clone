@@ -8,11 +8,7 @@ import {
   Login,
   Signup,
   AddPost,
-<<<<<<< Updated upstream
   Likes,
-=======
-  EditProfile,
->>>>>>> Stashed changes
 } from './src/screens';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -35,8 +31,6 @@ const App = () => {
     try {
       if (authUser) {
         await setUserState(authUser); // Goes to firestore and fetches user data for the logged user and sets to App's state.
-      } else {
-        setUser(null);
       }
     } catch (err) {
       console.error(err);
@@ -47,6 +41,7 @@ const App = () => {
 
   const logOutUser = async () => {
     await auth.logOutUser();
+    setUser(null);
   };
 
   useEffect(() => {
@@ -64,7 +59,7 @@ const App = () => {
         <Tab.Navigator tabBar={(props) => <BottomTab {...props} />}>
           {isLoggedIn ? (
             <>
-            <Tab.Screen name="Likes" component={Likes} />
+              <Tab.Screen name="Likes" component={Likes} />
               <Tab.Screen name="Feed" component={Feed} />
               <Tab.Screen name="Search" component={Search} />
               <Tab.Screen
