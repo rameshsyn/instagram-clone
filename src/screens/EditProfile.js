@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,9 +15,14 @@ import theme from '../config/theme';
 import AppFormField from '../components/AppFormField';
 import {useAuth} from '../authContext';
 import {Picker} from '@react-native-community/picker';
+import {useNavigation} from '@react-navigation/native';
 
-const EditProfile = ({modalVisible, onModalToggle}) => {
+const EditProfile = ({route}) => {
+  const navigation = useNavigation();
+  const profileImageUrl = route?.params?.imageFilePath;
+
   const [personGender, setPersonGender] = useState('');
+  const [profilePicUrl, setProfilePicUrl] = useState('');
   const {user, updateData} = useAuth();
   const {
     uid,
@@ -30,95 +35,101 @@ const EditProfile = ({modalVisible, onModalToggle}) => {
     username,
     website,
   } = user;
+
+  useEffect(() => {
+    if (profileImageUrl) {
+      setProfilePicUrl(profileImageUrl);
+    }
+  }, [profileImageUrl]);
+
+  const editProfilePic = () => {
+    navigation.navigate('AddPost', {editProfilePic: true});
+  };
+
   const handleEditProfile = async (data) => {
     const tempData = {...data};
     tempData.gender = personGender;
+    if (profilePicUrl !== '') tempData.photoUrl = profilePicUrl;
 
     try {
       await updateData('Users', uid, tempData);
-      onModalToggle();
+      navigation.goBack();
     } catch (err) {
       console.error(err);
     }
   };
+
   return (
     <>
-      <Modal visible={modalVisible}>
-        <Formik
-          onSubmit={handleEditProfile}
-          initialValues={{
-            fullName,
-            username,
-            website,
-            bio,
-            email,
-            phone,
-            gender,
-          }}>
-          {({handleSubmit}) => (
-            <>
-              <View style={styles.topBar}>
-                <View style={styles.topBarLabel}>
-                  <TouchableHighlight onPress={onModalToggle}>
-                    <Icon name="close" size={20} />
-                  </TouchableHighlight>
-                  <Text style={styles.topBarLabelText}>Edit Profile</Text>
-                </View>
-                <TouchableHighlight
-                  onPress={handleSubmit}
-                  underlayColor={theme.colors.white}>
-                  <Icon name="check" style={styles.topBarTick} />
+      <Formik
+        onSubmit={handleEditProfile}
+        initialValues={{
+          fullName,
+          username,
+          website,
+          bio,
+          email,
+          phone,
+          gender,
+        }}>
+        {({handleSubmit}) => (
+          <>
+            <View style={styles.topBar}>
+              <View style={styles.topBarLabel}>
+                <TouchableHighlight onPress={() => navigation.goBack()}>
+                  <Icon name="close" size={20} />
                 </TouchableHighlight>
+                <Text style={styles.topBarLabelText}>Edit Profile</Text>
               </View>
-              <ScrollView style={styles.editProfileContainer}>
-                <TouchableWithoutFeedback
-                  onPress={() => console.log('Change profile photo clicked')}>
-                  <View style={styles.changeProfilePhotoContainer}>
-                    <Image
-                      source={{
-                        uri: photoUrl,
-                      }}
-                      style={styles.profileImage}
-                    />
-                    <Text
-                      style={styles.changeProfilePhotoText}
-                      onPress={() => console.log('change pic clicked')}>
-                      Change Profile Photo
-                    </Text>
-                  </View>
-                </TouchableWithoutFeedback>
-                <View style={styles.formContainer}>
-                  <AppFormField label="Name" name="fullName" />
-                  <AppFormField label="Username" name="username" />
-                  <AppFormField label="Website" name="website" />
-                  <AppFormField label="Bio" name="bio" />
-                  <Text style={styles.profileInfoText}>
-                    Profile Information
-                  </Text>
-                  <AppFormField label="E-mail Address" name="email" />
-                  <AppFormField
-                    label="Phone Number"
-                    name="phone"
-                    keyboardType="numeric"
+              <TouchableHighlight
+                onPress={handleSubmit}
+                underlayColor={theme.colors.white}>
+                <Icon name="check" style={styles.topBarTick} />
+              </TouchableHighlight>
+            </View>
+            <ScrollView style={styles.editProfileContainer}>
+              <TouchableWithoutFeedback onPress={() => editProfilePic()}>
+                <View style={styles.changeProfilePhotoContainer}>
+                  <Image
+                    source={{
+                      uri: profilePicUrl || photoUrl,
+                    }}
+                    style={styles.profileImage}
                   />
-                  <AppFormField label="Gender" name="gender" hideAppTextInput />
-                  <Picker
-                    selectedValue={personGender}
-                    mode="dropdown"
-                    style={styles.genderDropdown}
-                    onValueChange={(itemValue, itemIndex) =>
-                      setPersonGender(itemValue)
-                    }>
-                    <Picker.Item label="Male" value="male" />
-                    <Picker.Item label="Female" value="female" />
-                    <Picker.Item label="Other" value="other" />
-                  </Picker>
+                  <Text style={styles.changeProfilePhotoText}>
+                    Change Profile Photo
+                  </Text>
                 </View>
-              </ScrollView>
-            </>
-          )}
-        </Formik>
-      </Modal>
+              </TouchableWithoutFeedback>
+              <View style={styles.formContainer}>
+                <AppFormField label="Name" name="fullName" />
+                <AppFormField label="Username" name="username" />
+                <AppFormField label="Website" name="website" />
+                <AppFormField label="Bio" name="bio" />
+                <Text style={styles.profileInfoText}>Profile Information</Text>
+                <AppFormField label="E-mail Address" name="email" />
+                <AppFormField
+                  label="Phone Number"
+                  name="phone"
+                  keyboardType="numeric"
+                />
+                <AppFormField label="Gender" name="gender" hideAppTextInput />
+                <Picker
+                  selectedValue={personGender}
+                  mode="dropdown"
+                  style={styles.genderDropdown}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setPersonGender(itemValue)
+                  }>
+                  <Picker.Item label="Male" value="male" />
+                  <Picker.Item label="Female" value="female" />
+                  <Picker.Item label="Other" value="other" />
+                </Picker>
+              </View>
+            </ScrollView>
+          </>
+        )}
+      </Formik>
     </>
   );
 };

@@ -7,9 +7,15 @@ const MediaBrowser = (props) => {
   };
 
   const handleNextPress = (selectedImageFilePath) => {
-    props.navigation.navigate('NewPostShare', {
-      imageFilePath: selectedImageFilePath,
-    });
+    if (props.editProfilePic) {
+      props.navigation.navigate('EditProfile', {
+        imageFilePath: selectedImageFilePath,
+      });
+    } else {
+      props.navigation.navigate('NewPostShare', {
+        imageFilePath: selectedImageFilePath,
+      });
+    }
   };
 
   return (

@@ -5,10 +5,13 @@ import MediaBrowser from './MediaBrowser';
 
 const Stack = createStackNavigator();
 
-const AddPost = () => {
+const AddPost = ({route}) => {
+  const editProfilePic = route?.params?.editProfilePic;
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="MediaBrowser" mode="modal" component={MediaBrowser} />
+      <Stack.Screen name="MediaBrowser" mode="modal">
+        {(props) => <MediaBrowser {...props} editProfilePic={editProfilePic} />}
+      </Stack.Screen>
       <Stack.Screen name="NewPostShare" component={NewPostShare} />
     </Stack.Navigator>
   );

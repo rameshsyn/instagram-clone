@@ -91,7 +91,15 @@ export const fetchUserByAuthUid = (Uid) => {
   return firestore().collection('Users').doc(Uid).get();
 };
 
-export const updateData = (collection, document, data) => {
+export const updateData = async (collection, document, data) => {
+  if (data.photoUrl) {
+    const randomFileName = Math.random().toString(36).slice(-9);
+    const STORAGE_PATH = `/images/${data.username}/${randomFileName}`;
+    const reference = storage().ref(STORAGE_PATH);
+    await reference.putFile(data.photoUrl);
+    const url = await storage().ref(STORAGE_PATH).getDownloadURL();
+    data.photoUrl = url;
+  }
   return firestore().collection(collection).doc(document).update(data);
 };
 

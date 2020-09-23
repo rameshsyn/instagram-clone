@@ -4,10 +4,13 @@ import Search from './Search';
 import Notification from './Notification';
 import Login from './Login';
 import Signup from './Signup';
-import EditProfile from './EditProfile';
 import AddPost from './AddPost';
 import PostsScreen from './PostsScreen';
+<<<<<<< Updated upstream
 import Likes from './Likes';
+=======
+import EditProfile from './EditProfile';
+>>>>>>> Stashed changes
 
 export {
   Feed,
@@ -16,8 +19,11 @@ export {
   Notification,
   Login,
   Signup,
-  EditProfile,
   AddPost,
   PostsScreen,
+<<<<<<< Updated upstream
   Likes,
+=======
+  EditProfile,
+>>>>>>> Stashed changes
 };

@@ -5,11 +5,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import theme from '../config/theme';
 import {useAuth} from '../authContext';
+import {BaseRouter} from '@react-navigation/native';
 
 const BottomTab = ({state, descriptors, navigation}) => {
   const focusedOptions = descriptors[state.routes[state.index].key].options;
   const {
     user: {photoUrl},
+    isLoggedIn,
   } = useAuth();
 
   if (focusedOptions.tabBarVisible === false) {
@@ -23,7 +25,13 @@ const BottomTab = ({state, descriptors, navigation}) => {
         const isFocused = state.index === index;
 
         const onPress = () => {
-          const event = navigation.emit({
+          if (route.name === 'AddPost') {
+            navigation.navigate(route.name, {editProfilePic: false});
+          } else {
+            navigation.navigate(route.name);
+          }
+          {
+            /* const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
@@ -31,6 +39,7 @@ const BottomTab = ({state, descriptors, navigation}) => {
 
           if (!isFocused && !event.defaultPrevented) {
             navigation.navigate(route.name);
+          } */
           }
         };
 

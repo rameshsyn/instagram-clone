@@ -29,7 +29,9 @@ const PostFooter = ({
         </View>
       </View>
       <View style={styles.footerBottom}>
-        <Text style={styles.likes}>{likeCount} likes</Text>
+        <Text style={styles.likes}>
+          {likeCount} {likeCount > 1 ? 'likes' : 'like'}
+        </Text>
         <Text>
           <Text style={styles.username}>{username}</Text>
           <Text>{description}</Text>

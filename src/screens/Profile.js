@@ -72,19 +72,25 @@ const ProfileImageSection = ({
         />
       </View>
       <View style={styles.profileStats}>
-        <TouchableHighlight onPress={viewPosts}>
+        <TouchableHighlight
+          onPress={viewPosts}
+          underlayColor={theme.colors.grey}>
           <>
             <Text style={styles.infoValue}>{postCount}</Text>
             <Text>Posts</Text>
           </>
         </TouchableHighlight>
-        <TouchableHighlight onPress={viewFollowers}>
+        <TouchableHighlight
+          onPress={viewFollowers}
+          underlayColor={theme.colors.grey}>
           <>
             <Text style={styles.infoValue}>{followers.length}</Text>
             <Text>Followers</Text>
           </>
         </TouchableHighlight>
-        <TouchableHighlight onPress={viewFollowing}>
+        <TouchableHighlight
+          onPress={viewFollowing}
+          underlayColor={theme.colors.grey}>
           <>
             <Text style={styles.infoValue}>{following.length}</Text>
             <Text>Following</Text>
@@ -107,10 +113,11 @@ const ProfileInfoDetails = ({fullName, bio, website}) => {
 
 const ProfileAction = ({isOwnProfile, viewUserId, isFollowing}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
   const {user} = useAuth();
 
-  const handleModalToggle = () => {
-    setModalVisible((visible) => !visible);
+  const openEditProfile = () => {
+    navigation.navigate('EditProfile');
   };
 
   const handleFollow = async () => {
@@ -127,11 +134,11 @@ const ProfileAction = ({isOwnProfile, viewUserId, isFollowing}) => {
     <View style={styles.profileActionContainer}>
       {isOwnProfile ? (
         <>
-          <AppButton title="Edit Profile" onPress={handleModalToggle} />
-          <EditProfile
+          <AppButton title="Edit Profile" onPress={openEditProfile} />
+          {/* <EditProfile
             modalVisible={modalVisible}
             onModalToggle={handleModalToggle}
-          />
+          /> */}
         </>
       ) : (
         <View style={styles.profileAction}>
@@ -175,7 +182,6 @@ const ProfileDetails = ({route}) => {
   const {isLoggedIn, user: loggedUser} = useAuth();
   const user = viewUser ? viewUser : loggedUser;
   const [posts, setPosts] = useState([]);
-  console.log('Viewuser 🖤🖤', viewUser, 'User 💘💘💘', user);
   const navigation = useNavigation();
 
   const {
@@ -202,10 +208,10 @@ const ProfileDetails = ({route}) => {
   }, [user]);
 
   const viewFollowing = () => {
-    navigation.navigate('FollowingScreen', {userId: user.uid });
+    navigation.navigate('FollowingScreen', {userId: user.uid});
   };
   const viewFollowers = () => {
-    navigation.navigate('FollowersScreen', {userId: user.uid });
+    navigation.navigate('FollowersScreen', {userId: user.uid});
   };
 
   const viewPosts = () => {
@@ -313,8 +319,13 @@ const ProfileDrawer = () => (
 );
 
 const Profile = ({route}) => {
+<<<<<<< Updated upstream
   const viewUser = route?.params?.params?.user;
   // console.log('Viewuser from profile', route.params.user);
+=======
+  // console.log(route.params.params.user);
+  // const viewUser = route?.params?.params?.user;
+>>>>>>> Stashed changes
   const {user, setUser} = useAuth();
 
   const updateUserData = (userData) => {
@@ -323,22 +334,44 @@ const Profile = ({route}) => {
   useEffect(() => {
     const subscriber = subscribeCollectionDocChange(
       'Users',
+<<<<<<< Updated upstream
       viewUser?.uid,
+=======
+      user.uid,
+>>>>>>> Stashed changes
       updateUserData,
     );
     return subscriber;
-  }, [viewUser]);
+  }, []);
 
   return (
-    <ProfileStack.Navigator>
+    <ProfileStack.Navigator initialRouteName="ProfileDrawer">
       <ProfileStack.Screen
         name="ProfileDrawer"
         options={{headerShown: false}}
         component={ProfileDrawer}
       />
-      <ProfileStack.Screen name="PostsScreen" options={{title:'Posts'}} component={PostsScreen} />
-      <ProfileStack.Screen name="FollowingScreen" options={{title:'Following'}}  component={FollowingScreen} />
-      <ProfileStack.Screen name="FollowersScreen" options={{title:'Followers'}}  component={FollowersScreen} />
+      <ProfileStack.Screen
+        name="PostsScreen"
+        options={{title: 'Posts'}}
+        component={PostsScreen}
+      />
+      <ProfileStack.Screen
+        name="FollowingScreen"
+        options={{title: 'Following'}}
+        component={FollowingScreen}
+      />
+
+      <ProfileStack.Screen
+        name="FollowersScreen"
+        options={{title: 'Followers'}}
+        component={FollowersScreen}
+      />
+      <ProfileStack.Screen
+        name="EditProfile"
+        options={{headerShown: false}}
+        component={EditProfile}
+      />
     </ProfileStack.Navigator>
   );
 };
@@ -366,7 +399,7 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
   },
   drawerBottomSection: {
-    height: 55,
+    height: 100,
     width: '100%',
     borderTopColor: theme.colors.grey,
     borderTopWidth: 1,

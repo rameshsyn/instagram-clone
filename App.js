@@ -8,7 +8,11 @@ import {
   Login,
   Signup,
   AddPost,
+<<<<<<< Updated upstream
   Likes,
+=======
+  EditProfile,
+>>>>>>> Stashed changes
 } from './src/screens';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
