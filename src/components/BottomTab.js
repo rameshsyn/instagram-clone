@@ -5,15 +5,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import theme from '../config/theme';
 import {useAuth} from '../authContext';
-import {BaseRouter} from '@react-navigation/native';
 
 const BottomTab = ({state, descriptors, navigation}) => {
   const focusedOptions = descriptors[state.routes[state.index].key].options;
-  const {
-    user: {photoUrl},
-    isLoggedIn,
-  } = useAuth();
+  const {user} = useAuth();
 
+  const photoUrl = user?.photoUrl;
   if (focusedOptions.tabBarVisible === false) {
     return null;
   }

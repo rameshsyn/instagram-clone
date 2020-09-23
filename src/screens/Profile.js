@@ -264,7 +264,7 @@ const ProfileDrawerContent = (props) => {
           label="Archive"
           labelStyle={styles.drawerItemText}
           icon={() => <Icon size={30} name="cog-counterclockwise" />}
-          onPress={() => console.log('Drawer item clicked')}
+          onPress={logOutUser}
         />
         <DrawerItem
           label="Your Activity"
@@ -319,13 +319,8 @@ const ProfileDrawer = () => (
 );
 
 const Profile = ({route}) => {
-<<<<<<< Updated upstream
-  const viewUser = route?.params?.params?.user;
-  // console.log('Viewuser from profile', route.params.user);
-=======
   // console.log(route.params.params.user);
   // const viewUser = route?.params?.params?.user;
->>>>>>> Stashed changes
   const {user, setUser} = useAuth();
 
   const updateUserData = (userData) => {
@@ -334,11 +329,7 @@ const Profile = ({route}) => {
   useEffect(() => {
     const subscriber = subscribeCollectionDocChange(
       'Users',
-<<<<<<< Updated upstream
-      viewUser?.uid,
-=======
       user.uid,
->>>>>>> Stashed changes
       updateUserData,
     );
     return subscriber;
@@ -361,7 +352,6 @@ const Profile = ({route}) => {
         options={{title: 'Following'}}
         component={FollowingScreen}
       />
-
       <ProfileStack.Screen
         name="FollowersScreen"
         options={{title: 'Followers'}}
