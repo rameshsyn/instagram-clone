@@ -313,7 +313,7 @@ const ProfileDrawer = () => (
 );
 
 const Profile = ({route}) => {
-  const viewUser = route.params.params.user;
+  const viewUser = route?.params?.params?.user;
   // console.log('Viewuser from profile', route.params.user);
   const {user, setUser} = useAuth();
 
@@ -323,7 +323,7 @@ const Profile = ({route}) => {
   useEffect(() => {
     const subscriber = subscribeCollectionDocChange(
       'Users',
-      viewUser.uid,
+      viewUser?.uid,
       updateUserData,
     );
     return subscriber;

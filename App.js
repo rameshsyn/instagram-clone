@@ -8,6 +8,7 @@ import {
   Login,
   Signup,
   AddPost,
+  Likes,
 } from './src/screens';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -59,6 +60,7 @@ const App = () => {
         <Tab.Navigator tabBar={(props) => <BottomTab {...props} />}>
           {isLoggedIn ? (
             <>
+            <Tab.Screen name="Likes" component={Likes} />
               <Tab.Screen name="Feed" component={Feed} />
               <Tab.Screen name="Search" component={Search} />
               <Tab.Screen

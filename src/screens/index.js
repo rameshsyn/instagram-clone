@@ -7,6 +7,7 @@ import Signup from './Signup';
 import EditProfile from './EditProfile';
 import AddPost from './AddPost';
 import PostsScreen from './PostsScreen';
+import Likes from './Likes';
 
 export {
   Feed,
@@ -18,4 +19,5 @@ export {
   EditProfile,
   AddPost,
   PostsScreen,
+  Likes,
 };
